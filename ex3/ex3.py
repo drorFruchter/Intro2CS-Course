@@ -24,9 +24,9 @@ def input_list():
 
 
 def inner_product(vec_1, vec_2):
-    if len(vec_1) == 0 or len(vec_2) == 0:
+    if len(vec_1) == 0 and len(vec_2) == 0:
         return 0
-    if len(vec_1) != len(vec_2):
+    if len(vec_1) != len(vec_2) or len(vec_1) == 0 or len(vec_2) == 0:
         return None
     vec_sum = 0
     for i in range(len(vec_1)):
@@ -73,8 +73,12 @@ def monotonicity_inverse(def_bool):
     if def_bool[0] and def_bool[2]:
         return [1,1,1,1,1,1]
     elif def_bool[0] or def_bool[1]:
+        if not def_bool[1]:
+            return [1,1,2,3,4,4]
         return [1,2,3,4,5,6]
     elif def_bool[2] or def_bool[3]:
+        if not def_bool[3]:
+            return [6,5,5,4,4,3]
         return [6,5,4,3,2,1]
     else:
         return [1,0,-1,1,12,3]
@@ -119,5 +123,5 @@ def num_of_orthogonal(vectors):
                 counter += 1
     return counter
 
-
-print(input_list())
+bool_def = [False, False, True, False]
+print(monotonicity_inverse(bool_def))

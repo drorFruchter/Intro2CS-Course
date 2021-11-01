@@ -21,48 +21,70 @@ def validate_guess(guess):
     return guess.islower() and len(guess) == 1 and guess.isalpha()
 
 
-def run_single_game(words_list, score):
-    word = hangman_helper.get_random_word(words_list)
-    pattern = '_' * len(word)
-    wrong_guesses = set()
-    msg = ""
-    while '_' in pattern and score > 0:
-        hangman_helper.display_state(pattern, wrong_guesses, score, msg)
-        guess_type, guess = hangman_helper.get_input()
-        if guess_type == 1 and validate_guess(guess): # => Letter
-            if guess not in wrong_guesses and guess not in pattern:
-                score -= 1
-                repetitions = word.count(guess)
-                if repetitions != 0 and guess not in pattern:
-                    pattern = update_word_pattern(word, pattern, guess)
-                    score = update_score(score, repetitions)
-                else:
-                    wrong_guesses.add(guess)
-            else:
-                msg = "You already picked that letter"
-        elif guess_type == 2: # => word
-            score -= 1
-            if guess == word:
-                score = update_score(score, pattern.count('_')) - 1
-                break
-        elif guess_type == 3: # => Clue
-            score -= 1
-            filtered_words = filter_words_list(words_list,
-                                               pattern,
-                                               wrong_guesses)
-            if len(filtered_words) > hangman_helper.HINT_LENGTH:
-                cut = (hangman_helper.HINT_LENGTH-1)*len(filtered_words)\
-                      //hangman_helper.HINT_LENGTH
-                filtered_words = filtered_words[cut:cut+3]
-            hangman_helper.show_suggestions(filtered_words)
+def guessed_letter(game):
+    if game["guess"] not in game["wrong_guesses"] \
+            and game["guess"] not in game["pattern"]:
+        game["score"] -= 1
+        repetitions = game["word"].count(game["guess"])
+        if repetitions != 0 and game["guess"] not in game["pattern"]:
+            game["pattern"] = update_word_pattern(game["word"], game["pattern"], game["guess"])
+            game["score"] = update_score(game["score"], repetitions)
         else:
-            msg = "Wrong input!"
-    if score != 0:
-        msg = "Good job! You guessed the word!"
+            game["wrong_guesses"].add(game["guess"])
     else:
-        msg = "Better luck next time! The word was \"" + word + "\""
-    hangman_helper.display_state(pattern, wrong_guesses, score, msg)
-    return score
+        game["msg"] = "You already picked that letter"
+    return game
+
+
+def asked_for_clue(game, words_list):
+    filtered_words = filter_words_list(words_list,
+                                       game["pattern"],
+                                       game["wrong_guesses"])
+    if len(filtered_words) > hangman_helper.HINT_LENGTH:
+        cut = (hangman_helper.HINT_LENGTH-1)*len(filtered_words) \
+              // hangman_helper.HINT_LENGTH
+        filtered_words = filtered_words[cut:cut+3]
+    hangman_helper.show_suggestions(filtered_words)
+
+
+def run_single_game(words_list, score):
+    game = {"word": hangman_helper.get_random_word(words_list),
+            "pattern": "",
+            "wrong_guesses": set(),
+            "msg": "",
+            "guess": "",
+            "guess_type": "",
+            "score": score
+            }
+    game["pattern"] = '_' * len(game["word"])
+    while '_' in game["pattern"] and game["score"] > 0:
+        hangman_helper.display_state(game["pattern"],
+                                     game["wrong_guesses"],
+                                     game["score"],
+                                     game["msg"])
+        game["guess_type"], game["guess"] = hangman_helper.get_input()
+        if game["guess_type"] == 1 and validate_guess(game["guess"]):
+            guessed_letter(game)
+        elif game["guess_type"] == 2:
+            game["score"] -= 1
+            if game["guess"] == game["word"]:
+                game["score"] = update_score(game["score"],
+                                             game["pattern"].count('_')) - 1
+                break
+        elif game["guess_type"] == 3: # => Clue
+            asked_for_clue(game, words_list)
+        else:
+            game["msg"] = "Wrong input!"
+    if game["score"] != 0:
+        game["msg"] = "Good job! You guessed the word!"
+    else:
+        game["msg"] = "Better luck next time! The word was \""\
+                      + game["word"] + "\""
+    hangman_helper.display_state(game["pattern"],
+                                 game["wrong_guesses"],
+                                 game["score"],
+                                 game["msg"])
+    return game["score"]
 
 
 def init_new_round(round=1, score=hangman_helper.POINTS_INITIAL):
@@ -89,12 +111,12 @@ def init_game():
 def filter_word(word, pattern, wrong_guess_lst):
     if len(word) == len(pattern):
         for index, letter in enumerate(word):
-            if pattern[index] == '_':
-                continue
-            if letter == pattern[index] and letter not in wrong_guess_lst:
-                continue
-            else:
+            if letter in wrong_guess_lst:
                 return False
+            elif pattern[index] != '_' and word.count(letter) != pattern.count(letter):
+                return False
+            elif pattern[index] != '_' and letter == pattern[index]:
+                continue
         return True
     return False
 
@@ -105,12 +127,10 @@ def filter_words_list(words, pattern, wrong_guess_lst):
     return list(words)
 
 
-
 def main():
     init_game()
 
 
 if __name__ == "__main__":
-    main()
-
-
+    # main()
+    run_single_game(["aaa"], 3)

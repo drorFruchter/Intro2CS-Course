@@ -2,8 +2,13 @@ import hangman_helper
 
 WORDS_LIST = hangman_helper.load_words()
 
-# Update a pattern based on the word and the letter it gets
-# Returns the new pattern
+"""
+Update the pattern based on the guessed letter
+    :param word: the picked word
+    :param pattern: the current pattern
+    :param letter: the guessed letter
+    :return: The updated pattern (string)
+"""
 def update_word_pattern(word, pattern, letter):
     pattern = list(pattern)
     if letter in word:
@@ -13,14 +18,25 @@ def update_word_pattern(word, pattern, letter):
     return ''.join(pattern)
 
 
+"""
+returns the new score based on how many times the letter repeated
+"""
 def update_score(score, repetitions):
     return score + repetitions*(repetitions+1)//2
 
 
+"""
+checks if the guess is valid.
+"""
 def validate_guess(guess):
     return guess.islower() and len(guess) == 1 and guess.isalpha()
 
 
+"""
+Handles with a guess of letter
+    :param game: dict of the current game stats
+    returns an updated game stats
+"""
 def guessed_letter(game):
     if game["guess"] not in game["wrong_guesses"] \
             and game["guess"] not in game["pattern"]:
@@ -36,6 +52,12 @@ def guessed_letter(game):
     return game
 
 
+"""
+Handles with a ask for clue
+    :param game: dict of the current game stats
+    :param word_list: a list of all the words
+    prints a optional words as a clue
+"""
 def asked_for_clue(game, words_list):
     filtered_words = filter_words_list(words_list,
                                        game["pattern"],
@@ -47,6 +69,12 @@ def asked_for_clue(game, words_list):
     hangman_helper.show_suggestions(filtered_words)
 
 
+"""
+Runs a single round of the game
+    :param word_list: a list of all the words
+    :param score: the score the player starts with
+    prints a optional words as a clue
+"""
 def run_single_game(words_list, score):
     game = {"word": hangman_helper.get_random_word(words_list),
             "pattern": "",
@@ -87,6 +115,12 @@ def run_single_game(words_list, score):
     return game["score"]
 
 
+"""
+Inititate a new round
+    :param round: the number of rounds the player did so far
+    :param score: the score the player starts with
+    prints a optional words as a clue
+"""
 def init_new_round(round=1, score=hangman_helper.POINTS_INITIAL):
     status = {"rounds": round, "score": score}
     status["score"] = run_single_game(WORDS_LIST,
@@ -94,6 +128,9 @@ def init_new_round(round=1, score=hangman_helper.POINTS_INITIAL):
     return status
 
 
+"""
+Initiate a new game
+"""
 def init_game():
     status = init_new_round()
     while status["score"] > 0: # => Won
@@ -108,6 +145,13 @@ def init_game():
         init_game()
 
 
+"""
+Checks if a word is valid for clue
+    :param word: the word that's being checked
+    :param pattern: the current pattern
+    :param wrong_guess_lst: the set of wrong guesses
+    :returns True if word is valid
+"""
 def filter_word(word, pattern, wrong_guess_lst):
     if len(word) == len(pattern):
         for index, letter in enumerate(word):
@@ -121,12 +165,23 @@ def filter_word(word, pattern, wrong_guess_lst):
     return False
 
 
+
+"""
+Filters a whole list of words by the filter_word function
+    :param words: a list of all the words
+    :param pattern: the current pattern
+    :param wrong_guess_lst: the set of wrong guesses
+    :returns a list of the filtered words
+"""
 def filter_words_list(words, pattern, wrong_guess_lst):
     words = filter(lambda word:
                    filter_word(word, pattern, wrong_guess_lst), words)
     return list(words)
 
 
+"""
+Init the program
+"""
 def main():
     init_game()
 

@@ -1,6 +1,15 @@
+#################################################################
+# FILE : hangman.py
+# WRITER : eyal , eyalmutzary , 206910432
+# EXERCISE : intro2cs ex4 2021
+# DESCRIPTION: A great hangman game
+# STUDENTS I DISCUSSED THE EXERCISE WITH:
+# WEB PAGES I USED: Wikipedia, W3School
+# NOTES: ...
+#################################################################
+
 import hangman_helper
 
-WORDS_LIST = hangman_helper.load_words()
 
 """
 Update the pattern based on the guessed letter
@@ -43,7 +52,9 @@ def guessed_letter(game):
         game["score"] -= 1
         repetitions = game["word"].count(game["guess"])
         if repetitions != 0 and game["guess"] not in game["pattern"]:
-            game["pattern"] = update_word_pattern(game["word"], game["pattern"], game["guess"])
+            game["pattern"] = update_word_pattern(game["word"],
+                                                  game["pattern"],
+                                                  game["guess"])
             game["score"] = update_score(game["score"], repetitions)
         else:
             game["wrong_guesses"].add(game["guess"])
@@ -69,6 +80,7 @@ def asked_for_clue(game, words_list):
     hangman_helper.show_suggestions(filtered_words)
 
 
+
 """
 Runs a single round of the game
     :param word_list: a list of all the words
@@ -87,9 +99,10 @@ def run_single_game(words_list, score):
     game["pattern"] = '_' * len(game["word"])
     while '_' in game["pattern"] and game["score"] > 0:
         hangman_helper.display_state(game["pattern"],
-                                     game["wrong_guesses"],
+                                     list(game["wrong_guesses"]),
                                      game["score"],
                                      game["msg"])
+        game["msg"] = ""
         game["guess_type"], game["guess"] = hangman_helper.get_input()
         if game["guess_type"] == 1 and validate_guess(game["guess"]):
             guessed_letter(game)
@@ -99,7 +112,7 @@ def run_single_game(words_list, score):
                 game["score"] = update_score(game["score"],
                                              game["pattern"].count('_')) - 1
                 break
-        elif game["guess_type"] == 3: # => Clue
+        elif game["guess_type"] == 3:
             asked_for_clue(game, words_list)
         else:
             game["msg"] = "Wrong input!"
@@ -109,7 +122,7 @@ def run_single_game(words_list, score):
         game["msg"] = "Better luck next time! The word was \""\
                       + game["word"] + "\""
     hangman_helper.display_state(game["pattern"],
-                                 game["wrong_guesses"],
+                                 list(game["wrong_guesses"]),
                                  game["score"],
                                  game["msg"])
     return game["score"]
@@ -121,9 +134,9 @@ Inititate a new round
     :param score: the score the player starts with
     prints a optional words as a clue
 """
-def init_new_round(round=1, score=hangman_helper.POINTS_INITIAL):
+def init_new_round(words_list, round=1, score=hangman_helper.POINTS_INITIAL):
     status = {"rounds": round, "score": score}
-    status["score"] = run_single_game(WORDS_LIST,
+    status["score"] = run_single_game(words_list,
                                       status["score"])
     return status
 
@@ -131,8 +144,8 @@ def init_new_round(round=1, score=hangman_helper.POINTS_INITIAL):
 """
 Initiate a new game
 """
-def init_game():
-    status = init_new_round()
+def init_game(words_list):
+    status = init_new_round(words_list)
     while status["score"] > 0: # => Won
         msg = "You played " + str(status["rounds"]) + \
               " rounds, and accumulated " + str(status["score"])
@@ -142,7 +155,7 @@ def init_game():
             return
     msg = "Game over. You did " + str(status["rounds"]) + " rounds."
     if hangman_helper.play_again(msg):
-        init_game()
+        init_game(words_list)
 
 
 """
@@ -157,7 +170,8 @@ def filter_word(word, pattern, wrong_guess_lst):
         for index, letter in enumerate(word):
             if letter in wrong_guess_lst:
                 return False
-            elif pattern[index] != '_' and word.count(letter) != pattern.count(letter):
+            elif pattern[index] != '_' \
+                    and word.count(letter) != pattern.count(letter):
                 return False
             elif pattern[index] != '_' and letter == pattern[index]:
                 continue
@@ -183,9 +197,9 @@ def filter_words_list(words, pattern, wrong_guess_lst):
 Init the program
 """
 def main():
-    init_game()
+    words_list = hangman_helper.load_words()
+    init_game(words_list)
 
 
 if __name__ == "__main__":
-    # main()
-    run_single_game(["aaa"], 3)
+    main()

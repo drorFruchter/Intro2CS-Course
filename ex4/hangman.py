@@ -9,7 +9,7 @@
 #################################################################
 
 import hangman_helper
-
+import copy
 
 """
 Update the pattern based on the guessed letter
@@ -57,7 +57,7 @@ def guessed_letter(game):
                                                   game["guess"])
             game["score"] = update_score(game["score"], repetitions)
         else:
-            game["wrong_guesses"].add(game["guess"])
+            game["wrong_guesses"].append(game["guess"])
     else:
         game["msg"] = "You already picked that letter"
     return game
@@ -74,9 +74,13 @@ def asked_for_clue(game, words_list):
                                        game["pattern"],
                                        game["wrong_guesses"])
     if len(filtered_words) > hangman_helper.HINT_LENGTH:
-        cut = (hangman_helper.HINT_LENGTH-1)*len(filtered_words) \
+        step = ((hangman_helper.HINT_LENGTH-1)*len(words_list)) \
               // hangman_helper.HINT_LENGTH
-        filtered_words = filtered_words[cut:cut+3]
+        clues = []
+        for i in range(0,len(filtered_words),step):
+            clues.append(filtered_words[i])
+
+    game["score"] -= 1
     hangman_helper.show_suggestions(filtered_words)
 
 
@@ -90,7 +94,7 @@ Runs a single round of the game
 def run_single_game(words_list, score):
     game = {"word": hangman_helper.get_random_word(words_list),
             "pattern": "",
-            "wrong_guesses": set(),
+            "wrong_guesses": [],
             "msg": "",
             "guess": "",
             "guess_type": "",
@@ -99,20 +103,22 @@ def run_single_game(words_list, score):
     game["pattern"] = '_' * len(game["word"])
     while '_' in game["pattern"] and game["score"] > 0:
         hangman_helper.display_state(game["pattern"],
-                                     list(game["wrong_guesses"]),
+                                     game["wrong_guesses"],
                                      game["score"],
                                      game["msg"])
         game["msg"] = ""
         game["guess_type"], game["guess"] = hangman_helper.get_input()
-        if game["guess_type"] == 1 and validate_guess(game["guess"]):
+        if game["guess_type"] == hangman_helper.LETTER\
+                and validate_guess(game["guess"]):
             guessed_letter(game)
-        elif game["guess_type"] == 2:
+        elif game["guess_type"] == hangman_helper.WORD:
             game["score"] -= 1
             if game["guess"] == game["word"]:
                 game["score"] = update_score(game["score"],
-                                             game["pattern"].count('_')) - 1
+                                             game["pattern"].count('_'))
+                game["pattern"] = game["word"]
                 break
-        elif game["guess_type"] == 3:
+        elif game["guess_type"] == hangman_helper.HINT:
             asked_for_clue(game, words_list)
         else:
             game["msg"] = "Wrong input!"
@@ -150,10 +156,10 @@ def init_game(words_list):
         msg = "You played " + str(status["rounds"]) + \
               " rounds, and accumulated " + str(status["score"])
         if hangman_helper.play_again(msg):
-            status = init_new_round(status["rounds"] + 1, status["score"])
+            status = init_new_round(words_list, status["rounds"] + 1, status["score"])
         else:
             return
-    msg = "Game over. You did " + str(status["rounds"]) + " rounds."
+    msg = "Game over. You did " + str(status["rounds"]) + " rounds. "
     if hangman_helper.play_again(msg):
         init_game(words_list)
 
@@ -187,10 +193,10 @@ Filters a whole list of words by the filter_word function
     :param wrong_guess_lst: the set of wrong guesses
     :returns a list of the filtered words
 """
-def filter_words_list(words, pattern, wrong_guess_lst):
-    words = filter(lambda word:
-                   filter_word(word, pattern, wrong_guess_lst), words)
-    return list(words)
+def filter_words_list(words_list, pattern, wrong_guess_lst):
+    words = [word for word in words_list
+             if filter_word(word,pattern,wrong_guess_lst)]
+    return words
 
 
 """

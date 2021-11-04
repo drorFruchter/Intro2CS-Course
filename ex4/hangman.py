@@ -73,15 +73,19 @@ def asked_for_clue(game, words_list):
     filtered_words = filter_words_list(words_list,
                                        game["pattern"],
                                        game["wrong_guesses"])
-    if len(filtered_words) > hangman_helper.HINT_LENGTH:
-        step = ((hangman_helper.HINT_LENGTH-1)*len(words_list)) \
-              // hangman_helper.HINT_LENGTH
-        clues = []
-        for i in range(0,len(filtered_words),step):
-            clues.append(filtered_words[i])
-
     game["score"] -= 1
-    hangman_helper.show_suggestions(filtered_words)
+    if len(filtered_words) > hangman_helper.HINT_LENGTH:
+        clues = []
+        i = 0
+        while i < len(filtered_words):
+            try:
+                clues.append(filtered_words[(i*len(words_list))//hangman_helper.HINT_LENGTH])
+                i += 1
+            except:
+                break
+        hangman_helper.show_suggestions(clues)
+    else:
+        hangman_helper.show_suggestions(filtered_words)
 
 
 

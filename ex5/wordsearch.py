@@ -59,25 +59,88 @@ def count_occurrences_in_series(word: str, letters: str):
     return count
 
 
+def reverse_strings_in_list(lst: List[str]):
+    return [st[::-1] for st in lst]
+
+
+def handle_direction_d_or_u(matrix:List[List[str]], series_list: List[str]):
+    st: str = ""
+    for col in range(len(matrix[0])):
+        for row in range(len(matrix)):
+            st += matrix[row][col]
+        series_list.append(st)
+        st = ""
+    return series_list
+
+
+def handle_direction_w_or_z(matrix: List[List[str]], series_list: List[str]):
+    st: str = ""
+    for col in range(len(matrix[0])):
+        for row in range(len(matrix)):
+            st += matrix[row][col]
+            col -= 1
+            if col < 0:
+                break
+        series_list.append(st)
+        st = ""
+    starting_row = 1
+    for col in range(len(matrix[0]), 0, -1):
+        col_length = len(matrix[0])-1
+        for row in range(starting_row,len(matrix)):
+            st += matrix[row][col_length]
+            col_length -= 1
+            if col_length < 0:
+                break
+        starting_row += 1
+        series_list.append(st)
+        st = ""
+
+
 def get_series_list_by_direction(matrix:List[List[str]], direction):
     series_list: List[str] = []
+    if matrix == []:
+        return []
 
-    if direction == "r" or direction == "l":
+    elif direction == "r" or direction == "l":
         for row in matrix:
-            if direction == 'r':
-                series_list.append(''.join(row))
-            else:
-                series_list.append(''.join(row)[::-1])
+            series_list.append(''.join(row))
 
     elif direction == "d" or direction == "u":
+        handle_direction_d_or_u(matrix,series_list)
+
+    elif direction == 'w' or direction == 'z':
+        handle_direction_w_or_z(matrix, series_list)
+
+    if direction == 'l' or direction == 'u' or direction == 'z':
+        series_list = reverse_strings_in_list(series_list)
+
+    elif direction == 'x' or direction == 'y':
         st: str = ""
         for col in range(len(matrix[0])):
-            for row in range(len(matrix)):
+            print("start")
+            for row in range(len(matrix)-1,0,-1):
+                print([row, col])
                 st += matrix[row][col]
-            if direction == "u":
-                st = st[::-1]
+                col -= 1
+                if col < 0:
+                    break
+            print("done")
             series_list.append(st)
             st = ""
+
+        # reseted_col = len(matrix[0])-1
+        # for col in range(len(matrix[0])):
+        #     print("start")
+        #     for row in range(len(matrix)-1, 0, -1):
+        #         print([row, reseted_col])
+        #         st += matrix[row][reseted_col]
+        #         reseted_col += 1
+        #         if reseted_col >= len(matrix[0]):
+        #             break
+        #     reseted_col = len(matrix[0])-1
+        #     print("done")
+        #     series_list.append(st)
+        #     st = ""
 
     return series_list
 
@@ -97,5 +160,5 @@ def get_series_list_by_direction(matrix:List[List[str]], direction):
 #                          directions: str):
 
 
-# matrix = read_matrix_file("matrix_file")
-# print(get_series_list_by_direction(matrix, "u"))
+matrix = read_matrix_file("matrix_file")
+print(get_series_list_by_direction(matrix, "x"))

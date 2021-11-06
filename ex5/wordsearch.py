@@ -1,5 +1,6 @@
 from typing import List, Dict
-
+from sys import argv
+from time import sleep
 
 def check_input_args(args: List[str]):
     """
@@ -7,12 +8,14 @@ def check_input_args(args: List[str]):
         :return None if they valid, or Error if not.
         It should be: word_file,matrix_file, output_file, directions
     """
-    if args[0] == "word_file" \
+
+    if len(args) == 4 \
+            and args[0] == "word_file" \
             and args[1] == "matrix_file" \
             and args[2] == "output_file" \
             and args[3] == "directions":
         return None
-    return "Error, param name wasn't valid."
+    return "Error, params were invalid."
 
 
 def read_wordlist_file(filename: str):
@@ -37,6 +40,17 @@ def read_matrix_file(filename: str):
                    if letter != ',' and letter != '\n']
                   for row in reader.readlines()]
     return matrix
+
+
+def read_directions_file(filename: str):
+    """
+        Reads the directions file and returns a string.
+        :param filename - the name of the file to read.
+        :return a string with some of the letters: 'udrlwxyz'.
+    """
+    with open(filename + '.txt') as reader:
+        directions = str(reader.readlines())
+    return directions
 
 
 def count_occurrences_in_series(word: str, letters: str):
@@ -193,6 +207,13 @@ def search_word_single_direction(word: str,
 def find_words_in_matrix(word_list: List[str],
                          matrix: List[List[str]],
                          directions: str):
+    """
+        counts occurrences of words in a matrix by many directions
+        :param word_list - the list of words to look for.
+        :param matrix - a 2D list.
+        :param directions - a string of all directions to check.
+        :return a dictionary of the type: {word: occurrences}
+    """
     occ_dict: Dict[str: int] = dict()
     for word in word_list:
         occurrences: int = 0
@@ -203,6 +224,41 @@ def find_words_in_matrix(word_list: List[str],
     return occ_dict
 
 
-matrix = read_matrix_file("matrix_file")
-word_list = read_wordlist_file("word_file")
-print(find_words_in_matrix(word_list, matrix, "rudlwxyz"))
+def convert_result_to_list(results):
+    """
+        Convert a dictionary type result to list of tuples
+        :param results - a dictionary of: {word: occurrences}
+        :return a list from the type: List[(word, occurrences)]
+    """
+    new_lst: List[(str, int)] = []
+    for word in results:
+        new_lst.append((word, results[word]))
+    return new_lst
+
+
+def write_output_file(results, output_filename: str):
+    """
+        Writes in the file the results.
+        :param results - a list from the form: List[(word, occurrences)]
+        :return None
+    """
+    f = open(output_filename + ".txt", "w")
+    st = ""
+    for couple in results:
+        st += couple[0] + "," + str(couple[1]) + "\n"
+    f.write(st)
+    f.close()
+
+
+def main():
+    if check_input_args(argv[1:]) is None:
+        words, mat, output, direct = argv[1:]
+        word_list = read_wordlist_file(words)
+        matrix = read_matrix_file(mat)
+        directions: str = read_directions_file(direct)
+        results = find_words_in_matrix(word_list, matrix, directions)
+        write_output_file(convert_result_to_list(results), output)
+
+
+if __name__ == "__main__":
+    main()

@@ -1,5 +1,4 @@
-from typing import List
-import os
+from typing import List, Dict
 
 
 def check_input_args(args: List[str]):
@@ -48,7 +47,7 @@ def count_occurrences_in_series(word: str, letters: str):
         :return the amount of occurrences the word had in the letters.
     """
     if word == "" or letters == "":
-        return None
+        return 0
 
     i: int = len(word)
     count: int = 0
@@ -60,10 +59,21 @@ def count_occurrences_in_series(word: str, letters: str):
 
 
 def reverse_strings_in_list(lst: List[str]):
+    """
+        Reverese every string in the list
+        :param lst - a list of strings
+        :return a new list with every string reversed.
+    """
     return [st[::-1] for st in lst]
 
 
 def handle_direction_d_or_u(matrix:List[List[str]], series_list: List[str]):
+    """
+        Scans a matrix down, and adds a series of letters for every column
+        :param matrix - a 2D list to scan
+        :param series_list - a list to add the new strings
+        :return updated series_list
+    """
     st: str = ""
     for col in range(len(matrix[0])):
         for row in range(len(matrix)):
@@ -74,6 +84,12 @@ def handle_direction_d_or_u(matrix:List[List[str]], series_list: List[str]):
 
 
 def handle_direction_w_or_z(matrix: List[List[str]], series_list: List[str]):
+    """
+        Scans a matrix w direction, and adds the series of letters.
+        :param matrix - a 2D list to scan
+        :param series_list - a list to add the new strings
+        :return updated series_list
+    """
     st: str = ""
     for col in range(len(matrix[0])):
         for row in range(len(matrix)):
@@ -97,6 +113,12 @@ def handle_direction_w_or_z(matrix: List[List[str]], series_list: List[str]):
 
 
 def handle_direction_x_or_y(matrix: List[List[str]], series_list: List[str]):
+    """
+        Scans a matrix x direction, and adds the series of letters.
+        :param matrix - a 2D list to scan
+        :param series_list - a list to add the new strings
+        :return updated series_list
+    """
     st: str = ""
     for col in range(len(matrix[0])):
         row = len(matrix) - 1
@@ -119,7 +141,14 @@ def handle_direction_x_or_y(matrix: List[List[str]], series_list: List[str]):
         series_list.append(st)
         st = ""
 
+
 def get_series_list_by_direction(matrix:List[List[str]], direction):
+    """
+        Creates a list of letter series
+        :param matrix - a 2D list to scan
+        :param direction - the direction to scan.
+        :return list of the scanned strings by the direction
+    """
     series_list: List[str] = []
     if matrix == []:
         return []
@@ -144,20 +173,36 @@ def get_series_list_by_direction(matrix:List[List[str]], direction):
     return series_list
 
 
+def search_word_single_direction(word: str,
+                                 matrix: List[List[str]],
+                                 direction: str):
+    """
+        counts the occurrences of a word in list of strings
+        :param word - the word to look for.
+        :param matrix - a 2D list.
+        :param direction - the direction to scan
+        :return the number of occurrences in the list.
+    """
+    series_list = get_series_list_by_direction(matrix, direction)
+    count: int = 0
+    for series in series_list:
+        count += count_occurrences_in_series(word, series)
+    return count
 
 
-# def search_word_single_direction(word: str,
-#                                  matrix: List[List[str]],
-#                                  direction: str):
-#     pass
-
-
-
-
-# def find_words_in_matrix(word_lsit: List[str],
-#                          matrix: List[List[str]],
-#                          directions: str):
+def find_words_in_matrix(word_list: List[str],
+                         matrix: List[List[str]],
+                         directions: str):
+    occ_dict: Dict[str: int] = dict()
+    for word in word_list:
+        occurrences: int = 0
+        for direction in directions:
+            occurrences += search_word_single_direction(word, matrix, direction)
+        if occurrences > 0:
+            occ_dict[word] = occurrences
+    return occ_dict
 
 
 matrix = read_matrix_file("matrix_file")
-print(get_series_list_by_direction(matrix, "x"))
+word_list = read_wordlist_file("word_file")
+print(find_words_in_matrix(word_list, matrix, "rudlwxyz"))

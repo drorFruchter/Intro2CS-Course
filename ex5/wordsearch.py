@@ -96,6 +96,29 @@ def handle_direction_w_or_z(matrix: List[List[str]], series_list: List[str]):
         st = ""
 
 
+def handle_direction_x_or_y(matrix: List[List[str]], series_list: List[str]):
+    st: str = ""
+    for col in range(len(matrix[0])):
+        row = len(matrix) - 1
+        for _ in range(len(matrix)):
+            st += matrix[row][col]
+            col -= 1
+            row -= 1
+            if row < 0 or col < 0:
+                break
+        series_list.append(st)
+        st = ""
+    for row in range(len(matrix)-1):
+        col = len(matrix[0]) - 1
+        for _ in range(len(matrix)):
+            st += matrix[row][col]
+            col -= 1
+            row -= 1
+            if row < 0 or col < 0:
+                break
+        series_list.append(st)
+        st = ""
+
 def get_series_list_by_direction(matrix:List[List[str]], direction):
     series_list: List[str] = []
     if matrix == []:
@@ -111,36 +134,12 @@ def get_series_list_by_direction(matrix:List[List[str]], direction):
     elif direction == 'w' or direction == 'z':
         handle_direction_w_or_z(matrix, series_list)
 
-    if direction == 'l' or direction == 'u' or direction == 'z':
-        series_list = reverse_strings_in_list(series_list)
-
     elif direction == 'x' or direction == 'y':
-        st: str = ""
-        for col in range(len(matrix[0])):
-            print("start")
-            for row in range(len(matrix)-1,0,-1):
-                print([row, col])
-                st += matrix[row][col]
-                col -= 1
-                if col < 0:
-                    break
-            print("done")
-            series_list.append(st)
-            st = ""
+        handle_direction_x_or_y(matrix, series_list)
 
-        # reseted_col = len(matrix[0])-1
-        # for col in range(len(matrix[0])):
-        #     print("start")
-        #     for row in range(len(matrix)-1, 0, -1):
-        #         print([row, reseted_col])
-        #         st += matrix[row][reseted_col]
-        #         reseted_col += 1
-        #         if reseted_col >= len(matrix[0]):
-        #             break
-        #     reseted_col = len(matrix[0])-1
-        #     print("done")
-        #     series_list.append(st)
-        #     st = ""
+    if direction == 'l' or direction == 'u' \
+            or direction == 'z' or direction == 'y':
+        series_list = reverse_strings_in_list(series_list)
 
     return series_list
 

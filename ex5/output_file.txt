@@ -1,0 +1,8 @@
+long,1
+can,1
+toe,1
+crop,1
+dog,1
+cat,2
+ants,1
+apple,1

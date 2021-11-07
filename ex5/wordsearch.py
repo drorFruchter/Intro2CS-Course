@@ -1,6 +1,6 @@
 from typing import List, Dict
 from sys import argv
-from time import sleep
+
 
 def check_input_args(args: List[str]):
     """

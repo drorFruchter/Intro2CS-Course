@@ -15,7 +15,7 @@ def separate_channels(image: List[List[List[int]]]):
                 new_lst[channel][row].append(value) # adds value by channel
     return new_lst
 
-
+#tested
 def combine_channels(channels: List[List[List[int]]]):
     if channels == [[[]]]:
         return channels
@@ -33,16 +33,17 @@ def combine_channels(channels: List[List[List[int]]]):
         channel_counter += 1
     return new_image
 
-
+# tested
 def RGB2grayscale(colored_image: List[List[List[int]]]):
-    new_lst: List[List[int]] = []
+    new_image: List[List[int]] = []
     for i in range(len(colored_image)):
+        new_image.append([])
         for j in range(len(colored_image[i])):
             red: float = colored_image[i][j][0]
             green: float = colored_image[i][j][1]
             blue: float = colored_image[i][j][2]
-            new_lst.append([round(red*0.299 + green*0.587 + blue*0.114)])
-    return new_lst
+            new_image[i].append(round(red*0.299 + green*0.587 + blue*0.114))
+    return new_image
 
 
 def blur_kernel(size: int):
@@ -100,4 +101,5 @@ def rotate_90(image: List[List[int]], direction: str):
 
 def get_edges(image, blur_size, block_size, c):
     pass
+
 

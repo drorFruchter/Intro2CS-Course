@@ -5,6 +5,8 @@ from cartoonify import *
 def main():
     test_seperate_channels()
     test_rotate_90()
+    test_combine_channels()
+    test_RGB2grayscale()
 
 
 def test_rotate_90():
@@ -29,6 +31,15 @@ def test_combine_channels():
     assert combine_channels([[[1]], [[2]], [[3]]]) == [[[1, 2, 3]]]
     assert combine_channels([[[1, 2]], [[3, 4]]]) == [[[1, 3], [2, 4]]]
     assert combine_channels([[[1, 2], [3, 4]], [[5, 6], [7, 8]]]) == [[[1, 5], [2, 6]], [[3, 7], [4, 8]]]
+
+
+def test_RGB2grayscale():
+    assert RGB2grayscale([[[0, 0, 0]]]) == [[0]]
+    assert RGB2grayscale([[[100, 180, 240]]]) == [[163]]
+    assert RGB2grayscale([[[100, 180, 240], [100, 180, 240], [100, 180, 240]]]) == [[163, 163, 163]]
+    assert RGB2grayscale([[[100, 180, 240], [100, 180, 240], [100, 180, 240]],
+                          [[100, 180, 240], [100, 180, 240], [100, 180, 240]]]) == [[163, 163, 163], [163, 163, 163]]
+
 
 if __name__ == '__main__':
     main()

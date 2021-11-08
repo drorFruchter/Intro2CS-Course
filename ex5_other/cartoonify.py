@@ -23,6 +23,8 @@ def combine_channels(channels: List[List[List[int]]]):
     new_image.append([])
     channel_counter = 0
     for row in range(len(channels[channel_counter])):
+        if row >= 1:
+            new_image.append([])
         for pixel in range(len(channels[channel_counter][row])):
             if len(new_image[row]) < len(channels[channel_counter][row]):
                 new_image[row].append([]) # creates a new pixel in the channel
@@ -99,21 +101,3 @@ def rotate_90(image: List[List[int]], direction: str):
 def get_edges(image, blur_size, block_size, c):
     pass
 
-
-
-# print(combine_channels(separate_channels([[[]]])))
-print(combine_channels([[[1]], [[2]]]))
-print(combine_channels([[[1, 2]], [[3, 4]]]))
-# print(combine_channels([[[1, 2], [3, 4]], [[5, 6],[7,8]]]))
-# print(RGB2grayscale ([[[100, 180, 240],[100, 180, 240]]]))
-# print(blur_kernel(3))
-# print(bilinear_interpolation([[0, 64], [128, 255]], 0, 0))
-# print(bilinear_interpolation([[0, 64], [128, 255]], 1, 1))
-# print(bilinear_interpolation([[0, 64], [128, 255]], 0.5, 0.5))
-# print(bilinear_interpolation([[0, 64], [128, 255]], 0.5, 1.5))
-# print(rotate_90([[1, 2, 3], [4, 5, 6]], 'R'))
-# print(rotate_90([[1, 2, 3], [4, 5, 6]], 'L'))
-# print(rotate_90([[1, 2, 3], [4, 5, 6], [1, 9, 6], [7, 2, 6]], 'R'))
-# print(rotate_90([[1, 2, 3, 5, 6, 7], [4, 5, 6, 3, 7, 5]], 'R'))
-# print(rotate_90([[1],[2],[1],[2]], 'R'))
-# print(rotate_90([[1, 2, 3]], 'R'))

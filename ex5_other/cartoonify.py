@@ -1,4 +1,6 @@
 from typing import List
+from copy import deepcopy
+from math import floor
 
 # tested
 def separate_channels(image: List[List[List[int]]]):
@@ -14,6 +16,7 @@ def separate_channels(image: List[List[List[int]]]):
             for channel, value in enumerate(image[row][col]):
                 new_lst[channel][row].append(value) # adds value by channel
     return new_lst
+
 
 #tested
 def combine_channels(channels: List[List[List[int]]]):
@@ -33,6 +36,7 @@ def combine_channels(channels: List[List[List[int]]]):
         channel_counter += 1
     return new_image
 
+
 # tested
 def RGB2grayscale(colored_image: List[List[List[int]]]):
     new_image: List[List[int]] = []
@@ -46,6 +50,7 @@ def RGB2grayscale(colored_image: List[List[List[int]]]):
     return new_image
 
 
+# works
 def blur_kernel(size: int):
     result: List[List[int]] = []
     for _ in range(size):
@@ -56,11 +61,48 @@ def blur_kernel(size: int):
     return result
 
 
-# Didn't understand the question
+# works
+def add_frame_to_image(image: List[List[int]], frame_val: int, k: int):
+    framed_image: List[List[int]] = deepcopy(image)
+    for i in range(len(image)):
+        for _ in range(2):
+            framed_image[i].extend([frame_val]*(floor((k-1)/2)))
+            framed_image[i] = framed_image[i][::-1]
+    if k > 0:
+        top = [frame_val for _ in range(len(framed_image[0]))]
+        for _ in range(int((k-1)/2)):
+            framed_image = [top] + framed_image + [top]
+    return framed_image
+
+
+# works
+def get_pixel_area(image: List[List[int]], row: int, col: int, k: int):
+    framed_image = deepcopy(add_frame_to_image(image, image[row][col], k))
+    pixel_area: List[List[int]] = []
+    if k > 1:
+        row, col = row + int(((k-1)/2)), col + int(((k-1)/2))
+        radius = int((k-1)/2)
+    else:
+        radius = 1
+    i: int = row - radius - 1
+    while i < row+radius:
+        pixel_area.append(framed_image[i][col-radius:col+radius +1])
+        i += 1
+    return pixel_area
+
+
+"""
+Loop every pixel in the image:
+- Make a new matrix of all the pixels around
+--- try to full cut, if fails - [:pixel:k]
+- Calc the sum of that new matrix
+- new_pixel = sum * kernel * pixel
+"""
 def apply_kernel(image, kernel):
     pass
 
 
+# connected to bilinear_interpolation
 def check_xy_valid(y: float, x: float):
     if x > 1:
         x = 1
@@ -73,6 +115,7 @@ def check_xy_valid(y: float, x: float):
     return y,x
 
 
+# tested
 def bilinear_interpolation(image: List[List[int]], y: float, x: float):
     y, x = check_xy_valid(y, x)
     calc = round(image[0][0]*(1-x)*(1-y) + image[1][0]*y*(1-x) + image[0][1]*x*(1-y) + image[1][1]*x*y)
@@ -82,6 +125,7 @@ def bilinear_interpolation(image: List[List[int]], y: float, x: float):
 # Didn't understand the question
 def resize(image, new_height, new_width):
     pass
+
 
 # tested
 def rotate_90(image: List[List[int]], direction: str):
@@ -103,3 +147,4 @@ def get_edges(image, blur_size, block_size, c):
     pass
 
 
+print(get_pixel_area([[1, 2, 3], [4, 5, 6],[7, 8, 9]], 2, 2, 5))

@@ -21,16 +21,14 @@ def combine_channels(channels: List[List[List[int]]]):
         return channels
     new_image: List[List[List[int]]] = []
     new_image.append([])
-    for channel in range(len(channels)):
-        for row in range(len(channels[channel])):
-            for pixel in range(len(channels[channel][row])):
-                if len(new_image[row]) < len(channels[channel][row]):
-                    new_image[row].append([]) # creates a new pixel in the channel
-                for i in range(len(channels)):
-                    new_image[row][pixel].append(channels[i][row][pixel])
-                # print(channels[row][pixel])
-                # for i in range(len(channels[channel][channel])):
-                #     new_image[row][pixel].append(channels[channel][row][i])
+    channel_counter = 0
+    for row in range(len(channels[channel_counter])):
+        for pixel in range(len(channels[channel_counter][row])):
+            if len(new_image[row]) < len(channels[channel_counter][row]):
+                new_image[row].append([]) # creates a new pixel in the channel
+            for i in range(len(channels)):
+                new_image[row][pixel].append(channels[i][row][pixel])
+        channel_counter += 1
     return new_image
 
 
@@ -106,7 +104,7 @@ def get_edges(image, blur_size, block_size, c):
 # print(combine_channels(separate_channels([[[]]])))
 print(combine_channels([[[1]], [[2]]]))
 print(combine_channels([[[1, 2]], [[3, 4]]]))
-# print(combine_channels(separate_channels([[[1, 2], [3, 4]], [[5, 6]]])))
+# print(combine_channels([[[1, 2], [3, 4]], [[5, 6],[7,8]]]))
 # print(RGB2grayscale ([[[100, 180, 240],[100, 180, 240]]]))
 # print(blur_kernel(3))
 # print(bilinear_interpolation([[0, 64], [128, 255]], 0, 0))

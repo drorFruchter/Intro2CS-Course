@@ -22,5 +22,12 @@ def test_seperate_channels():
     assert separate_channels([[[1, 2], [3, 4]], [[5, 6]]]) == [[[1, 3], [5]], [[2, 4], [6]]]
 
 
+def test_combine_channels():
+    assert combine_channels([[[]]]) == [[[]]]
+    assert combine_channels([[[1]]]) == [[[1]]]
+    assert combine_channels([[[1]], [[2]]]) == [[[1, 2]]]
+    assert combine_channels([[[1]], [[2]], [[3]]]) == [[[1, 2, 3]]]
+    assert combine_channels([[[1, 2]], [[3, 4]]]) == [[[1, 3], [2, 4]]]
+
 if __name__ == '__main__':
     main()

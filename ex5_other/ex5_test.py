@@ -8,6 +8,7 @@ def main():
     test_combine_channels()
     test_RGB2grayscale()
     test_bilinear_interpolation()
+    test_apply_kernel()
 
 
 def test_rotate_90():
@@ -47,6 +48,15 @@ def test_bilinear_interpolation():
     assert bilinear_interpolation([[0, 64], [128, 255]], 1, 1) == 255
     assert bilinear_interpolation([[0, 64], [128, 255]], 0.5, 0.5) == 112
     assert bilinear_interpolation([[0, 64], [128, 255]], 0.5, 1.5) == 160
+
+
+def test_apply_kernel():
+    assert apply_kernel([[0, 128, 255]], blur_kernel(3)) == [[14, 128, 241]]
+    assert apply_kernel([[255, 255, 255]], blur_kernel(3)) == [[255, 255, 255]]
+    assert apply_kernel([[0, 128, 255],
+                         [0, 128, 255],
+                         [0, 128, 255]], blur_kernel(3)) == [[28, 128, 227], [43, 128, 213], [28, 128, 227]]
+    assert apply_kernel([[0]], blur_kernel(3)) == [[0]]
 
 
 if __name__ == '__main__':

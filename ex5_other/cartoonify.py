@@ -1,6 +1,6 @@
 from typing import List
 from copy import deepcopy
-from math import floor
+from math import floor, sqrt
 
 # tested
 def separate_channels(image: List[List[List[int]]]):
@@ -80,7 +80,7 @@ def get_pixel_area(image: List[List[int]], row: int, col: int, k: int):
     framed_image = deepcopy(add_frame_to_image(image, image[row][col], k))
     pixel_area: List[List[int]] = []
     if k > 1:
-        row, col = row + int(((k-1)/2)), col + int(((k-1)/2))
+        row, col = row + int(((k-1)/2)+1), col + int(((k-1)/2))
         radius = int((k-1)/2)
     else:
         radius = 1
@@ -91,18 +91,38 @@ def get_pixel_area(image: List[List[int]], row: int, col: int, k: int):
     return pixel_area
 
 
-"""
-Loop every pixel in the image:
-- Make a new matrix of all the pixels around
---- try to full cut, if fails - [:pixel:k]
-- Calc the sum of that new matrix
-- new_pixel = sum * kernel * pixel
-"""
+# works
+def sum_matrix(matrix: List[List[int]]):
+    total_sum: int = 0
+    for row in range(len(matrix)):
+        for col in range(len(matrix[row])):
+            total_sum += matrix[row][col]
+    return total_sum
+
+
+# works
+def apply_kernel_on_pixel(image, row, col, k):
+    pixel = round(sum_matrix(get_pixel_area(image, row, col, k)) * (1/(k**2)))
+    if pixel > 255:
+        pixel = 255
+    elif pixel < 0:
+        pixel = 0
+    return pixel
+
+
+# tested
 def apply_kernel(image, kernel):
-    pass
+    k = sqrt(kernel[0][0]**-1)
+    if k == 1:
+        return image
+    blurred_image = deepcopy(image)
+    for row in range(len(image)):
+        for col in range(len(image[row])):
+            blurred_image[row][col] = apply_kernel_on_pixel(image,row,col,k)
+    return blurred_image
 
 
-# connected to bilinear_interpolation
+# works - connected to bilinear_interpolation
 def check_xy_valid(y: float, x: float):
     if x > 1:
         x = 1
@@ -143,8 +163,32 @@ def rotate_90(image: List[List[int]], direction: str):
     return None
 
 
+def calc_threshold(image, row, col, k):
+    pixel_area = get_pixel_area(image, row, col, k)
+    threshold: int = sum_matrix(pixel_area) / (k**2)
+    return threshold
+
+
 def get_edges(image, blur_size, block_size, c):
-    pass
+    blurred_image = apply_kernel(image, blur_kernel(blur_size))
+    edged_image: List[List[int]] = []
+    # r: int = block_size // 2
+    for row in range(len(image)):
+        edged_image.append([])
+        for pixel in range(len(blurred_image[row])):
+            threshold = calc_threshold(blurred_image, row, pixel, block_size)
+            if blurred_image[row][pixel] < threshold - c:
+                edged_image[row].append(0)
+            else:
+                edged_image[row]. append(255)
+    return edged_image
 
 
-print(get_pixel_area([[1, 2, 3], [4, 5, 6],[7, 8, 9]], 2, 2, 5))
+# print(get_edges([[200, 50, 200]], 3, 3, 10))
+# print(get_edges([[200, 50, 200]], 5, 5, 10))
+print(get_edges([[200, 50, 200]], 1, 1, 10))
+# print(get_edges([[200, 50, 200], [200, 50, 200]], 3, 3, 10))
+# print(get_edges([[200, 50, 200]], 5, 5, 10))
+
+# print(sum_matrix(get_pixel_area([[1, 2, 3], [4, 5, 6],[7, 8, 9]], 1, 1, 3)))
+# print(apply_kernel([[0, 0, 0]], blur_kernel(3)))

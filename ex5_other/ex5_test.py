@@ -9,6 +9,7 @@ def main():
     test_RGB2grayscale()
     test_bilinear_interpolation()
     test_apply_kernel()
+    test_get_edges()
 
 
 def test_rotate_90():
@@ -58,6 +59,16 @@ def test_apply_kernel():
                          [0, 128, 255]], blur_kernel(3)) == [[28, 128, 227], [43, 128, 213], [28, 128, 227]]
     assert apply_kernel([[0]], blur_kernel(3)) == [[0]]
 
+
+def test_get_edges():
+    assert get_edges([[200, 50, 200]], 3, 3, 10) == [[255, 0, 255]]
+    assert get_edges([[200, 50, 200]], 5, 5, 10) == [[255, 0, 255]]
+    assert get_edges([[200, 50, 200]], 1, 1, 10) == [[255, 255, 255]]
+    assert get_edges([[200, 50, 200], [200, 50, 200]], 3, 3, 10) == [[255, 0, 255], [255, 0, 255]]
+    assert get_edges([[200, 50, 200], [200, 50, 200]], 5, 5, 10) == [[255, 0, 255], [255, 0, 255]]
+    assert get_edges([[200, 50, 200]], 3, 3, 10) == [[255, 0, 255]]
+    assert get_edges([[]], 3, 3, 10) == [[]]
+    assert get_edges([[200]], 3, 3, 10) == [[255]]
 
 if __name__ == '__main__':
     main()

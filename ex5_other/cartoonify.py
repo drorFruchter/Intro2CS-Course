@@ -164,7 +164,10 @@ def rotate_90(image: List[List[int]], direction: str):
 
 
 def calc_threshold(image, row, col, k):
-    pixel_area = get_pixel_area(image, row, col, k)
+    if k > 1:
+        pixel_area = get_pixel_area(image, row, col, k)
+    else:
+        return image[row][col] / (k**2)
     threshold: int = sum_matrix(pixel_area) / (k**2)
     return threshold
 
@@ -184,11 +187,9 @@ def get_edges(image, blur_size, block_size, c):
     return edged_image
 
 
-# print(get_edges([[200, 50, 200]], 3, 3, 10))
-# print(get_edges([[200, 50, 200]], 5, 5, 10))
-print(get_edges([[200, 50, 200]], 1, 1, 10))
-# print(get_edges([[200, 50, 200], [200, 50, 200]], 3, 3, 10))
-# print(get_edges([[200, 50, 200]], 5, 5, 10))
+
+
+
 
 # print(sum_matrix(get_pixel_area([[1, 2, 3], [4, 5, 6],[7, 8, 9]], 1, 1, 3)))
 # print(apply_kernel([[0, 0, 0]], blur_kernel(3)))

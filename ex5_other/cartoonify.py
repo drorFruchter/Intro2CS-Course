@@ -163,7 +163,7 @@ def rotate_90(image: List[List[int]], direction: str):
     return None
 
 
-def calc_threshold(image, row, col, k):
+def calc_threshold(image: List[List[int]], row: int, col: int, k: int):
     if k > 1:
         pixel_area = get_pixel_area(image, row, col, k)
     else:
@@ -172,7 +172,7 @@ def calc_threshold(image, row, col, k):
     return threshold
 
 
-def get_edges(image, blur_size, block_size, c):
+def get_edges(image: List[List[int]], blur_size:int , block_size: int, c:int):
     blurred_image = apply_kernel(image, blur_kernel(blur_size))
     edged_image: List[List[int]] = []
     # r: int = block_size // 2
@@ -187,9 +187,13 @@ def get_edges(image, blur_size, block_size, c):
     return edged_image
 
 
+def quantize(channel: List[List[int]], N: int):
+    for row in range(len(channel)):
+        for col in range(len(channel[row])):
+            channel[row][col] = \
+                round(floor(channel[row][col] * N/255) * 255/N)
+    return channel
 
 
 
 
-# print(sum_matrix(get_pixel_area([[1, 2, 3], [4, 5, 6],[7, 8, 9]], 1, 1, 3)))
-# print(apply_kernel([[0, 0, 0]], blur_kernel(3)))

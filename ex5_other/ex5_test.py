@@ -10,6 +10,7 @@ def main():
     test_bilinear_interpolation()
     test_apply_kernel()
     test_get_edges()
+    test_quantize()
 
 
 def test_rotate_90():
@@ -69,6 +70,12 @@ def test_get_edges():
     assert get_edges([[200, 50, 200]], 3, 3, 10) == [[255, 0, 255]]
     assert get_edges([[]], 3, 3, 10) == [[]]
     assert get_edges([[200]], 3, 3, 10) == [[255]]
+
+
+def test_quantize():
+    assert quantize([[0, 50, 100], [150, 200, 250]], 8) == [[0, 32, 96], [128, 191, 223]]
+    assert quantize([[0, 50, 100]], 8) == [[0, 32, 96]]
+    assert quantize([[0], [0], [0]], 8) == [[0], [0], [0]]
 
 if __name__ == '__main__':
     main()

@@ -135,10 +135,25 @@ def check_xy_valid(y: float, x: float):
     return y,x
 
 
-# tested
+# More tests needed
 def bilinear_interpolation(image: List[List[int]], y: float, x: float):
-    y, x = check_xy_valid(y, x)
-    calc = round(image[0][0]*(1-x)*(1-y) + image[1][0]*y*(1-x) + image[0][1]*x*(1-y) + image[1][1]*x*y)
+    framed_image = add_frame_to_image(deepcopy(image), 0 , 3)
+    a, b = y%1, x%1
+    x, y = int(x) + 1, int(y) + 1
+    if y >= len(framed_image) - 2:
+        framed_image[y+1][x] = framed_image[y][x]
+        framed_image[y+1][x+1] = framed_image[y+1][x]
+    if x >= len(framed_image[y]) - 2:
+        framed_image[y][x+1] = framed_image[y][x]
+        framed_image[y+1][x+1] = framed_image[y+1][x]
+    if y <= 0:
+        framed_image[y][x] = framed_image[y+1][x]
+    if x < 0:
+        framed_image[y][x] = framed_image[y][x+1]
+    calc = round(framed_image[y][x]*(1-a)*(1-b)
+                 + framed_image[y+1][x]*a*(1-b)
+                 + framed_image[y][x+1]*b*(1-a)
+                 + framed_image[y+1][x+1]*a*b)
     return calc
 
 
@@ -198,6 +213,7 @@ def quantize(image: List[List[int]], N: int):
     return new_channel
 
 
+# tested
 def quantize_colored_image(image, N):
     new_image = deepcopy(image)
     for channel in range(len(new_image)):
@@ -205,3 +221,7 @@ def quantize_colored_image(image, N):
     return new_image
 
 
+# print(bilinear_interpolation([[0, 64], [128, 255]], 0, 0))
+# print(bilinear_interpolation([[0, 64], [128, 255]], 1, 1))
+# print(bilinear_interpolation([[0, 64], [128, 255]], 0.5, 0.5))
+# print(bilinear_interpolation([[0, 64], [128, 255]], 0, 1.5))

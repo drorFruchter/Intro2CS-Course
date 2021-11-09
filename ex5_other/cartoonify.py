@@ -137,29 +137,36 @@ def check_xy_valid(y: float, x: float):
 
 # More tests needed
 def bilinear_interpolation(image: List[List[int]], y: float, x: float):
-    framed_image = add_frame_to_image(deepcopy(image), 0 , 3)
     a, b = y%1, x%1
-    x, y = int(x) + 1, int(y) + 1
-    if y >= len(framed_image) - 2:
-        framed_image[y+1][x] = framed_image[y][x]
-        framed_image[y+1][x+1] = framed_image[y+1][x]
-    if x >= len(framed_image[y]) - 2:
-        framed_image[y][x+1] = framed_image[y][x]
-        framed_image[y+1][x+1] = framed_image[y+1][x]
-    if y <= 0:
-        framed_image[y][x] = framed_image[y+1][x]
-    if x < 0:
-        framed_image[y][x] = framed_image[y][x+1]
-    calc = round(framed_image[y][x]*(1-a)*(1-b)
-                 + framed_image[y+1][x]*a*(1-b)
-                 + framed_image[y][x+1]*b*(1-a)
-                 + framed_image[y+1][x+1]*a*b)
+    y, x = int(y), int(x)
+
+    if y >= len(image):
+        y = len(image) - 1
+    elif y < 0:
+        y = 0
+    if x >= len(image[y]):
+        x = len(image[y]) - 1
+    elif x < 0:
+        x = 0
+
+    if y == len(image) - 1:
+        image.append(image[y])
+    if x == len(image[y]) - 1:
+        image[y].append(image[y][x])
+        image[y+1].append(image[y+1][x])
+
+    calc = round(image[y][x]*(1-a)*(1-b)
+                 + image[y+1][x]*a*(1-b)
+                 + image[y][x+1]*b*(1-a)
+                 + image[y+1][x+1]*a*b)
     return calc
 
 
-# Didn't understand the question
+# didn't understand the question
 def resize(image, new_height, new_width):
-    pass
+    height_ratio: float = float(new_height / len(image))
+    width_ratio: float = float(new_width / len(image[0]))
+
 
 
 # tested
@@ -221,7 +228,9 @@ def quantize_colored_image(image, N):
     return new_image
 
 
+
+# def add_mask(image1, image2, mask)
 # print(bilinear_interpolation([[0, 64], [128, 255]], 0, 0))
 # print(bilinear_interpolation([[0, 64], [128, 255]], 1, 1))
 # print(bilinear_interpolation([[0, 64], [128, 255]], 0.5, 0.5))
-# print(bilinear_interpolation([[0, 64], [128, 255]], 0, 1.5))
+# print(bilinear_interpolation([[0, 64], [128, 255]], 0.5, 2.5))

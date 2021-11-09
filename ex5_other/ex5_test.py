@@ -11,6 +11,7 @@ def main():
     test_apply_kernel()
     test_get_edges()
     test_quantize()
+    test_quantize_colored_image()
 
 
 def test_rotate_90():
@@ -76,6 +77,11 @@ def test_quantize():
     assert quantize([[0, 50, 100], [150, 200, 250]], 8) == [[0, 32, 96], [128, 191, 223]]
     assert quantize([[0, 50, 100]], 8) == [[0, 32, 96]]
     assert quantize([[0], [0], [0]], 8) == [[0], [0], [0]]
+
+
+def test_quantize_colored_image():
+    print(quantize_colored_image([[[0, 50, 100], [150, 200, 250]]], 8)) == [[[0, 32, 96], [128, 191, 223]]]
+
 
 if __name__ == '__main__':
     main()

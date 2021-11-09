@@ -163,6 +163,7 @@ def rotate_90(image: List[List[int]], direction: str):
     return None
 
 
+# works
 def calc_threshold(image: List[List[int]], row: int, col: int, k: int):
     if k > 1:
         pixel_area = get_pixel_area(image, row, col, k)
@@ -172,10 +173,10 @@ def calc_threshold(image: List[List[int]], row: int, col: int, k: int):
     return threshold
 
 
+# tested
 def get_edges(image: List[List[int]], blur_size:int , block_size: int, c:int):
     blurred_image = apply_kernel(image, blur_kernel(blur_size))
     edged_image: List[List[int]] = []
-    # r: int = block_size // 2
     for row in range(len(image)):
         edged_image.append([])
         for pixel in range(len(blurred_image[row])):
@@ -187,13 +188,20 @@ def get_edges(image: List[List[int]], blur_size:int , block_size: int, c:int):
     return edged_image
 
 
-def quantize(channel: List[List[int]], N: int):
-    for row in range(len(channel)):
-        for col in range(len(channel[row])):
-            channel[row][col] = \
-                round(floor(channel[row][col] * N/255) * 255/N)
-    return channel
+# tested
+def quantize(image: List[List[int]], N: int):
+    new_channel: List[List[int]] = deepcopy(image)
+    for row in range(len(new_channel)):
+        for col in range(len(new_channel[row])):
+            new_channel[row][col] = \
+                round(floor(new_channel[row][col] * N/255) * 255/N)
+    return new_channel
 
 
+def quantize_colored_image(image, N):
+    new_image = deepcopy(image)
+    for channel in range(len(new_image)):
+        new_image[channel] = quantize(new_image[channel], N)
+    return new_image
 
 

@@ -2,7 +2,7 @@ from typing import List
 from copy import deepcopy
 from math import floor, sqrt
 from sys import argv
-# import ex5_helper
+import ex5_helper
 
 # tested
 def separate_channels(image: List[List[List[int]]]):
@@ -23,20 +23,19 @@ def separate_channels(image: List[List[List[int]]]):
 #tested
 def combine_channels(channels: List[List[List[int]]]):
     if channels == [[[]]]:
-        return channels
-    new_image: List[List[List[int]]] = []
-    new_image.append([])
-    channel_counter = 0
-    for row in range(len(channels[channel_counter])):
-        if row >= 1:
-            new_image.append([])
-        for pixel in range(len(channels[channel_counter][row])):
-            if len(new_image[row]) < len(channels[channel_counter][row]):
-                new_image[row].append([]) # creates a new pixel in the channel
-            for i in range(len(channels)):
-                new_image[row][pixel].append(channels[i][row][pixel])
-        channel_counter += 1
-    return new_image
+        return [[[]]]
+    combined_image = []
+    # for _ in range(len(channels[0][0])):
+    #     combined_image.append([[]])
+    for row in range(len(channels[0])):
+        combined_image.append([])
+        for col in range(len(channels[0][0])):
+            combined_image[row].append([])
+            for ch in range(len(channels)):
+                combined_image[row][col].append(channels[ch][row][col])
+    return combined_image
+
+
 
 
 # tested
@@ -93,6 +92,8 @@ def add_frame_to_image(image: List[List[int]], frame_val: int, k: int):
 #     return pixel_area
 
 # works
+
+
 def get_pixel_area(image: List[List[int]], row: int, col: int, k: int):
     framed = False
     if k > 1:
@@ -104,10 +105,10 @@ def get_pixel_area(image: List[List[int]], row: int, col: int, k: int):
             or col >= len(image[0])-1-radius \
             or row == 0 \
             or col == 0:
-        framed_image = deepcopy(add_frame_to_image(image, image[row][col], k))
+        framed_image = add_frame_to_image(image, image[row][col], k)
         framed = True
     else:
-        framed_image = deepcopy(image)
+        framed_image = image
 
     pixel_area: List[List[int]] = []
     if k > 1 and framed:
@@ -145,11 +146,8 @@ def apply_kernel(image, kernel):
     if k == 1:
         return image
     blurred_image = deepcopy(image)
-    print("damit")
     for row in range(len(image)):
-        print(len(image))
         for col in range(len(image[row])):
-            # Unefficient
             blurred_image[row][col] = apply_kernel_on_pixel(image,row,col,k)
     return blurred_image
 
@@ -219,6 +217,7 @@ def rotate_90(image: List[List[int]], direction: str):
 
 # works
 def calc_threshold(image: List[List[int]], row: int, col: int, k: int):
+    k = int(k)
     if k > 1:
         pixel_area = get_pixel_area(image, row, col, k)
     else:
@@ -235,7 +234,7 @@ def get_edges(image: List[List[int]], blur_size:int , block_size: int, c:int):
         edged_image.append([])
         for pixel in range(len(blurred_image[row])):
             threshold = calc_threshold(blurred_image, row, pixel, block_size)
-            if blurred_image[row][pixel] < threshold - c:
+            if blurred_image[row][pixel] < threshold - int(c):
                 edged_image[row].append(0)
             else:
                 edged_image[row]. append(255)
@@ -244,7 +243,8 @@ def get_edges(image: List[List[int]], blur_size:int , block_size: int, c:int):
 
 # tested
 def quantize(image: List[List[int]], N: int):
-    new_channel: List[List[int]] = deepcopy(image)
+    new_channel: List[List[int]] = image
+    N = int(N)
     for row in range(len(new_channel)):
         for col in range(len(new_channel[row])):
             new_channel[row][col] = \
@@ -254,9 +254,12 @@ def quantize(image: List[List[int]], N: int):
 
 # tested
 def quantize_colored_image(image, N):
-    new_image = deepcopy(image)
+    new_image = image
     for channel in range(len(new_image)):
-        new_image[channel] = quantize(new_image[channel], N)
+        try:
+            new_image[channel] = quantize(new_image[channel], N)
+        except: # when went over all channels
+            break
     return new_image
 
 
@@ -304,39 +307,39 @@ def cartoonify(image: List[List[List[int]]],
                quant_num_shades: int):
     new_image = separate_channels(deepcopy(image)) # seperate to channels
     for channel in range(len(new_image)):
-        print("Channel" + str(channel))
         channel_edge = get_edges(new_image[channel], # getting edges
                                  blur_size,
                                  th_block_size,
                                  th_c)
-        print("passed1")
         new_image[channel] = add_mask(new_image[channel], # apply mask on image
                                       channel_edge,
                                       channel_edge)
-        print("passed")
-    new_image = quantize_colored_image(combine_channels(new_image), # quantize
+    new_image = combine_channels(new_image)
+    new_image = quantize_colored_image(new_image, # quantize
                                        quant_num_shades)
+    print(len(image), len(new_image))
     return new_image
 
 # python3 cartoonify.py <image_source> <cartoon_dest> <max_im_size>
 # <blur_size> <th_block_size> <th_c> <quant_num_shades>
-# if __name__ == "__main__":
-#     image_source, \
-#     cartoon_dest, \
-#     max_im_size, \
-#     blur_size, \
-#     th_block_size, \
-#     th_c, \
-#     quant_num_shades = argv[1:]
-#     image = ex5_helper.load_image(image_source)
-#     # if len(image) > max_im_size:
-#     #     ratio: float = float(len(image) / max_im_size)
-#     #     resize(image, max_im_size, len(image[0])*ratio)
-#     # elif len(image[0]) > max_im_size:
-#     #     ratio: float = float(len(image[0]) / max_im_size)
-#     #     resize(image, len(image)*ratio, max_im_size)
-#     # else:
-#     new_image = cartoonify(image, blur_size, th_block_size, th_c, quant_num_shades)
-#     ex5_helper.save_image(new_image, cartoon_dest)
-
+if __name__ == "__main__":
+    image_source, \
+    cartoon_dest, \
+    max_im_size, \
+    blur_size, \
+    th_block_size, \
+    th_c, \
+    quant_num_shades = argv[1:]
+    # ["./examples/very_tiny.jpg", "./results/tiny_cartoon.jpg", 460, 5, 15, 17, 8]
+    # argv[1:]
+    image = ex5_helper.load_image(image_source)
+    # if len(image) > max_im_size:
+    #     ratio: float = float(len(image) / max_im_size)
+    #     resize(image, max_im_size, len(image[0])*ratio)
+    # elif len(image[0]) > max_im_size:
+    #     ratio: float = float(len(image[0]) / max_im_size)
+    #     resize(image, len(image)*ratio, max_im_size)
+    # else:
+    new_image = cartoonify(image, blur_size, th_block_size, th_c, quant_num_shades)
+    ex5_helper.save_image(new_image, cartoon_dest)
 

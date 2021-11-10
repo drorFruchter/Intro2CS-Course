@@ -12,6 +12,7 @@ def main():
     test_get_edges()
     test_quantize()
     test_quantize_colored_image()
+    test_add_mask()
 
 
 def test_rotate_90():
@@ -82,6 +83,9 @@ def test_quantize():
 def test_quantize_colored_image():
     print(quantize_colored_image([[[0, 50, 100], [150, 200, 250]]], 8)) == [[[0, 32, 96], [128, 191, 223]]]
 
+
+def test_add_mask():
+    assert add_mask([[50, 50, 50]], [[200, 200, 200]], [[0, 0.5, 1]]) == [[200, 125, 50]]
 
 if __name__ == '__main__':
     main()

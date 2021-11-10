@@ -228,9 +228,36 @@ def quantize_colored_image(image, N):
     return new_image
 
 
+# works
+def mask_pixel(pixel1: int, pixel2: int, mask: int):
+    new_pixel = round(pixel1* mask + pixel2* (1 - mask))
+    return new_pixel
 
-# def add_mask(image1, image2, mask)
-# print(bilinear_interpolation([[0, 64], [128, 255]], 0, 0))
-# print(bilinear_interpolation([[0, 64], [128, 255]], 1, 1))
-# print(bilinear_interpolation([[0, 64], [128, 255]], 0.5, 0.5))
-# print(bilinear_interpolation([[0, 64], [128, 255]], 0.5, 2.5))
+
+# more tests needed
+def add_mask(image1, image2, mask):
+    new_image = []
+    is_multi_channel = type(image1[0][0]) == type(list())
+    for row in range(len(image1)):
+        new_image.append([])
+        for col in range(len(image1[row])):
+            if is_multi_channel:
+                for channel in range(len(image1[row][col])):
+                    new_image[row].append([])
+                    new_image[row][col].append(
+                        mask_pixel(image1[row][col][channel],
+                                   image2[row][col][channel],
+                                   mask[row][col]))
+            else:
+                new_image[row].append(mask_pixel(image1[row][col],
+                                                 image2[row][col],
+                                                 mask[row][col]))
+    return new_image
+
+
+def cartoonify(image: List[List[List[int]]],
+               blur_size: int,
+               th_block_size: int,
+               th_c: int,
+               quant_num_shades: int):
+

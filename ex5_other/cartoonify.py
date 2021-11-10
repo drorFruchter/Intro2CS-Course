@@ -2,7 +2,7 @@ from typing import List
 from copy import deepcopy
 from math import floor, sqrt
 from sys import argv
-import ex5_helper
+# import ex5_helper
 
 # tested
 def separate_channels(image: List[List[List[int]]]):
@@ -55,6 +55,7 @@ def RGB2grayscale(colored_image: List[List[List[int]]]):
 # works
 def blur_kernel(size: int):
     result: List[List[int]] = []
+    size = int(size) # EDITED
     for _ in range(size):
         inner_list = []
         for _ in range(size):
@@ -77,15 +78,41 @@ def add_frame_to_image(image: List[List[int]], frame_val: int, k: int):
     return framed_image
 
 
+# def get_pixel_area(image: List[List[int]], row: int, col: int, k: int):
+#     framed_image = deepcopy(add_frame_to_image(image, image[row][col], k))
+#     pixel_area: List[List[int]] = []
+#     if k > 1:
+#         row, col = row + int(((k-1)/2)+1), col + int(((k-1)/2))
+#         radius = int((k-1)/2)
+#     else:
+#         radius = 1
+#     i: int = row - radius - 1
+#     while i < row+radius:
+#         pixel_area.append(framed_image[i][col-radius:col+radius +1])
+#         i += 1
+#     return pixel_area
+
 # works
 def get_pixel_area(image: List[List[int]], row: int, col: int, k: int):
-    framed_image = deepcopy(add_frame_to_image(image, image[row][col], k))
-    pixel_area: List[List[int]] = []
+    framed = False
     if k > 1:
-        row, col = row + int(((k-1)/2)+1), col + int(((k-1)/2))
         radius = int((k-1)/2)
     else:
         radius = 1
+
+    if row >= len(image)-1-radius \
+            or col >= len(image[0])-1-radius \
+            or row == 0 \
+            or col == 0:
+        framed_image = deepcopy(add_frame_to_image(image, image[row][col], k))
+        framed = True
+    else:
+        framed_image = deepcopy(image)
+
+    pixel_area: List[List[int]] = []
+    if k > 1 and framed:
+        row, col = row + int(((k-1)/2)+1), col + int(((k-1)/2))
+
     i: int = row - radius - 1
     while i < row+radius:
         pixel_area.append(framed_image[i][col-radius:col+radius +1])
@@ -118,8 +145,11 @@ def apply_kernel(image, kernel):
     if k == 1:
         return image
     blurred_image = deepcopy(image)
+    print("damit")
     for row in range(len(image)):
+        print(len(image))
         for col in range(len(image[row])):
+            # Unefficient
             blurred_image[row][col] = apply_kernel_on_pixel(image,row,col,k)
     return blurred_image
 
@@ -273,35 +303,40 @@ def cartoonify(image: List[List[List[int]]],
                th_c: int,
                quant_num_shades: int):
     new_image = separate_channels(deepcopy(image)) # seperate to channels
-    for channel in len(new_image):
+    for channel in range(len(new_image)):
+        print("Channel" + str(channel))
         channel_edge = get_edges(new_image[channel], # getting edges
                                  blur_size,
                                  th_block_size,
                                  th_c)
+        print("passed1")
         new_image[channel] = add_mask(new_image[channel], # apply mask on image
                                       channel_edge,
                                       channel_edge)
+        print("passed")
     new_image = quantize_colored_image(combine_channels(new_image), # quantize
                                        quant_num_shades)
     return new_image
 
 # python3 cartoonify.py <image_source> <cartoon_dest> <max_im_size>
 # <blur_size> <th_block_size> <th_c> <quant_num_shades>
-if __name__ == "__main__":
-    image_source, \
-    cartoon_dest, \
-    max_im_size, \
-    blur_size, \
-    th_block_size, \
-    th_c, \
-    quant_num_shades = argv[1:]
-    image = ex5_helper.load_image(image_source)
-    if len(image) > max_im_size:
-        ratio: float = float(len(image) / max_im_size)
-        resize(image, max_im_size, len(image[0])*ratio)
-    elif len(image[0]) > max_im_size:
-        ratio: float = float(len(image[0]) / max_im_size)
-        resize(image, len(image)*ratio, max_im_size)
-    pass
+# if __name__ == "__main__":
+#     image_source, \
+#     cartoon_dest, \
+#     max_im_size, \
+#     blur_size, \
+#     th_block_size, \
+#     th_c, \
+#     quant_num_shades = argv[1:]
+#     image = ex5_helper.load_image(image_source)
+#     # if len(image) > max_im_size:
+#     #     ratio: float = float(len(image) / max_im_size)
+#     #     resize(image, max_im_size, len(image[0])*ratio)
+#     # elif len(image[0]) > max_im_size:
+#     #     ratio: float = float(len(image[0]) / max_im_size)
+#     #     resize(image, len(image)*ratio, max_im_size)
+#     # else:
+#     new_image = cartoonify(image, blur_size, th_block_size, th_c, quant_num_shades)
+#     ex5_helper.save_image(new_image, cartoon_dest)
 
 

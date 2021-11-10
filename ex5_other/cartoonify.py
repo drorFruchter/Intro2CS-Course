@@ -1,6 +1,8 @@
 from typing import List
 from copy import deepcopy
 from math import floor, sqrt
+from sys import argv
+import ex5_helper
 
 # tested
 def separate_channels(image: List[List[List[int]]]):
@@ -230,6 +232,8 @@ def quantize_colored_image(image, N):
 
 # works
 def mask_pixel(pixel1: int, pixel2: int, mask: int):
+    if mask > 1:
+        mask = 1
     new_pixel = round(pixel1* mask + pixel2* (1 - mask))
     return new_pixel
 
@@ -255,9 +259,49 @@ def add_mask(image1, image2, mask):
     return new_image
 
 
+"""
+seperate to channels
+for every channel:
+    get edges
+    quantize
+    add mask of edges
+combine channels
+"""
 def cartoonify(image: List[List[List[int]]],
                blur_size: int,
                th_block_size: int,
                th_c: int,
                quant_num_shades: int):
+    new_image = separate_channels(deepcopy(image)) # seperate to channels
+    for channel in len(new_image):
+        channel_edge = get_edges(new_image[channel], # getting edges
+                                 blur_size,
+                                 th_block_size,
+                                 th_c)
+        new_image[channel] = add_mask(new_image[channel], # apply mask on image
+                                      channel_edge,
+                                      channel_edge)
+    new_image = quantize_colored_image(combine_channels(new_image), # quantize
+                                       quant_num_shades)
+    return new_image
+
+# python3 cartoonify.py <image_source> <cartoon_dest> <max_im_size>
+# <blur_size> <th_block_size> <th_c> <quant_num_shades>
+if __name__ == "__main__":
+    image_source, \
+    cartoon_dest, \
+    max_im_size, \
+    blur_size, \
+    th_block_size, \
+    th_c, \
+    quant_num_shades = argv[1:]
+    image = ex5_helper.load_image(image_source)
+    if len(image) > max_im_size:
+        ratio: float = float(len(image) / max_im_size)
+        resize(image, max_im_size, len(image[0])*ratio)
+    elif len(image[0]) > max_im_size:
+        ratio: float = float(len(image[0]) / max_im_size)
+        resize(image, len(image)*ratio, max_im_size)
+    pass
+
 

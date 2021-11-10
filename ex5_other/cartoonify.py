@@ -2,7 +2,7 @@ from typing import List
 from copy import deepcopy
 from math import floor, sqrt
 from sys import argv
-import ex5_helper
+# import ex5_helper
 
 # tested
 def separate_channels(image: List[List[List[int]]]):
@@ -25,8 +25,6 @@ def combine_channels(channels: List[List[List[int]]]):
     if channels == [[[]]]:
         return [[[]]]
     combined_image = []
-    # for _ in range(len(channels[0][0])):
-    #     combined_image.append([[]])
     for row in range(len(channels[0])):
         combined_image.append([])
         for col in range(len(channels[0][0])):
@@ -34,8 +32,6 @@ def combine_channels(channels: List[List[List[int]]]):
             for ch in range(len(channels)):
                 combined_image[row][col].append(channels[ch][row][col])
     return combined_image
-
-
 
 
 # tested
@@ -178,26 +174,44 @@ def bilinear_interpolation(image: List[List[int]], y: float, x: float):
         x = len(image[y]) - 1
     elif x < 0:
         x = 0
-
-    if y == len(image) - 1:
-        image.append(image[y])
-    if x == len(image[y]) - 1:
-        image[y].append(image[y][x])
-        image[y+1].append(image[y+1][x])
-
-    calc = round(image[y][x]*(1-a)*(1-b)
-                 + image[y+1][x]*a*(1-b)
-                 + image[y][x+1]*b*(1-a)
-                 + image[y+1][x+1]*a*b)
+    image_copy = deepcopy(image)
+    if y == len(image_copy) - 1:
+        image_copy.append(image_copy[y])
+    if x == len(image_copy[y]) - 1:
+        image_copy[y].append(image_copy[y][x])
+        image_copy[y+1].append(image_copy[y+1][x])
+    calc = round(image_copy[y][x]*(1-a)*(1-b)
+                 + image_copy[y+1][x]*a*(1-b)
+                 + image_copy[y][x+1]*b*(1-a)
+                 + image_copy[y+1][x+1]*a*b)
     return calc
 
 
 # didn't understand the question
-def resize(image, new_height, new_width):
+def resize(image: List[List[int]], new_height, new_width):
     height_ratio: float = float(new_height / len(image))
     width_ratio: float = float(new_width / len(image[0]))
+    new_image = []
+    row, col = 0, 0
+    while row < new_height:
+        new_image.append([])
+        while col < new_width:
+            new_image[row].append(bilinear_interpolation(image, float(row/height_ratio), float(col/width_ratio)))
+            col += 1
+        row += 1
+        col = 0
+    return new_image
 
 
+# def resize_image(image: List[List[List[int]]], new_height, new_width):
+#     sep_image = separate_channels(deepcopy(image))
+#     new_image = []
+#     for channel in range(len(sep_image)):
+#         print(channel)
+#         new_image.append(resize(sep_image[channel], new_height, new_width))
+#         print(new_image)
+#     new_image = combine_channels(new_image)
+#     return new_image
 
 # tested
 def rotate_90(image: List[List[int]], direction: str):
@@ -322,24 +336,26 @@ def cartoonify(image: List[List[List[int]]],
 
 # python3 cartoonify.py <image_source> <cartoon_dest> <max_im_size>
 # <blur_size> <th_block_size> <th_c> <quant_num_shades>
-if __name__ == "__main__":
-    image_source, \
-    cartoon_dest, \
-    max_im_size, \
-    blur_size, \
-    th_block_size, \
-    th_c, \
-    quant_num_shades = argv[1:]
-    # ["./examples/very_tiny.jpg", "./results/tiny_cartoon.jpg", 460, 5, 15, 17, 8]
-    # argv[1:]
-    image = ex5_helper.load_image(image_source)
-    # if len(image) > max_im_size:
-    #     ratio: float = float(len(image) / max_im_size)
-    #     resize(image, max_im_size, len(image[0])*ratio)
-    # elif len(image[0]) > max_im_size:
-    #     ratio: float = float(len(image[0]) / max_im_size)
-    #     resize(image, len(image)*ratio, max_im_size)
-    # else:
-    new_image = cartoonify(image, blur_size, th_block_size, th_c, quant_num_shades)
-    ex5_helper.save_image(new_image, cartoon_dest)
+# if __name__ == "__main__":
+#     image_source, \
+#     cartoon_dest, \
+#     max_im_size, \
+#     blur_size, \
+#     th_block_size, \
+#     th_c, \
+#     quant_num_shades = argv[1:]
+#     # ["./examples/very_tiny.jpg", "./results/tiny_cartoon.jpg", 460, 5, 15, 17, 8]
+#     # argv[1:]
+#     image = ex5_helper.load_image(image_source)
+#     max_im_size = int(max_im_size)
+#     if len(image) > max_im_size:
+#         ratio: float = float(len(image) / max_im_size)
+#         resize_image(image, max_im_size, len(image[0])*ratio)
+#     elif len(image[0]) > max_im_size:
+#         ratio: float = float(len(image[0]) / max_im_size)
+#         resize_image(image, len(image)*ratio, max_im_size)
+#
+#     new_image = cartoonify(image, blur_size, th_block_size, th_c, quant_num_shades)
+#     ex5_helper.save_image(new_image, cartoon_dest)
 
+# print(resize([[1,2,3], [4,5,6], [7,8,9]], 4,4))

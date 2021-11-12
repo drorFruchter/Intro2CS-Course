@@ -52,6 +52,7 @@ def test_bilinear_interpolation():
     assert bilinear_interpolation([[0, 64], [128, 255]], 1, 1) == 255
     assert bilinear_interpolation([[0, 64], [128, 255]], 0.5, 0.5) == 112
     assert bilinear_interpolation([[0, 64], [128, 255]], 0.5, 1.5) == 160
+    assert bilinear_interpolation([[0, 64, 128], [0, 128, 255], [100, 100, 100]], 2, 2) == 100
 
 
 def test_apply_kernel():
@@ -78,15 +79,21 @@ def test_quantize():
     assert quantize([[0, 50, 100], [150, 200, 250]], 8) == [[0, 32, 96], [128, 191, 223]]
     assert quantize([[0, 50, 100]], 8) == [[0, 32, 96]]
     assert quantize([[0], [0], [0]], 8) == [[0], [0], [0]]
+    assert quantize([[0, 50, 100], [150, 200, 250]],8) == [[0, 32, 96], [128, 191, 223]]
 
 
 def test_quantize_colored_image():
     assert quantize_colored_image([[[0, 50, 100], [150, 200, 250]]], 8) == [[[0, 32, 96], [128, 191, 223]]]
+    assert quantize_colored_image([[[0, 250], [50, 200], [100, 150]], [[150, 100], [200, 50], [250, 0]]],8) \
+           == [[[0, 223], [32, 191], [96, 128]], [[128, 96], [191, 32], [223, 0]]]
 
 
 def test_add_mask():
     assert add_mask([[50, 50, 50]], [[200, 200, 200]], [[0, 0.5, 1]]) == [[200, 125, 50]]
 
+
+def test_resize():
+    assert resize([[0, 64, 128], [0, 128, 255], [100, 100, 100]],2,2) == [[0, 128], [100, 100]]
 
 def main():
     test_seperate_channels()
@@ -99,6 +106,7 @@ def main():
     test_quantize()
     test_quantize_colored_image()
     test_add_mask()
+    test_resize()
 
 
 if __name__ == '__main__':

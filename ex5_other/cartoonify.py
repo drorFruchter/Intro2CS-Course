@@ -2,7 +2,7 @@ from typing import List
 from copy import deepcopy
 from math import floor, sqrt
 from sys import argv
-# import ex5_helper
+import ex5_helper
 
 # tested
 def separate_channels(image: List[List[List[int]]]):
@@ -187,31 +187,37 @@ def bilinear_interpolation(image: List[List[int]], y: float, x: float):
     return calc
 
 
-# didn't understand the question
+# Tested
 def resize(image: List[List[int]], new_height, new_width):
-    height_ratio: float = float(new_height / len(image))
-    width_ratio: float = float(new_width / len(image[0]))
+    height_ratio: float = float(len(image) / new_height)
+    width_ratio: float = float(len(image[0]) / new_width)
     new_image = []
-    row, col = 0, 0
-    while row < new_height:
+    new_row_i = 0
+    row_skip, col_skip = 0.0, 0.0
+    while row_skip < len(image):
         new_image.append([])
-        while col < new_width:
-            new_image[row].append(bilinear_interpolation(image, float(row/height_ratio), float(col/width_ratio)))
-            col += 1
-        row += 1
-        col = 0
+        print(row_skip)
+        while col_skip < len(image[0]):
+            new_image[new_row_i].append(bilinear_interpolation(image, row_skip, col_skip))
+            col_skip += width_ratio
+        row_skip += height_ratio
+        col_skip = 0
+        new_row_i += 1
+    new_image[0][0] = image[0][0]
+    new_image[0][-1] = image[0][-1]
+    new_image[-1][0] = image[-1][0]
+    new_image[-1][-1] = image[-1][-1]
     return new_image
 
 
-# def resize_image(image: List[List[List[int]]], new_height, new_width):
-#     sep_image = separate_channels(deepcopy(image))
-#     new_image = []
-#     for channel in range(len(sep_image)):
-#         print(channel)
-#         new_image.append(resize(sep_image[channel], new_height, new_width))
-#         print(new_image)
-#     new_image = combine_channels(new_image)
-#     return new_image
+def resize_image(image: List[List[List[int]]], new_height, new_width):
+    image_copy = deepcopy(image)
+    image_copy = separate_channels(image_copy)
+    new_image = []
+    for channel in range(len(image_copy)):
+        new_image.append(resize(channel, new_height, new_width))
+    new_image = combine_channels(new_image)
+    return new_image
 
 # tested
 def rotate_90(image: List[List[int]], direction: str):
@@ -336,26 +342,23 @@ def cartoonify(image: List[List[List[int]]],
 
 # python3 cartoonify.py <image_source> <cartoon_dest> <max_im_size>
 # <blur_size> <th_block_size> <th_c> <quant_num_shades>
-# if __name__ == "__main__":
-#     image_source, \
-#     cartoon_dest, \
-#     max_im_size, \
-#     blur_size, \
-#     th_block_size, \
-#     th_c, \
-#     quant_num_shades = argv[1:]
-#     # ["./examples/very_tiny.jpg", "./results/tiny_cartoon.jpg", 460, 5, 15, 17, 8]
-#     # argv[1:]
-#     image = ex5_helper.load_image(image_source)
-#     max_im_size = int(max_im_size)
-#     if len(image) > max_im_size:
-#         ratio: float = float(len(image) / max_im_size)
-#         resize_image(image, max_im_size, len(image[0])*ratio)
-#     elif len(image[0]) > max_im_size:
-#         ratio: float = float(len(image[0]) / max_im_size)
-#         resize_image(image, len(image)*ratio, max_im_size)
-#
-#     new_image = cartoonify(image, blur_size, th_block_size, th_c, quant_num_shades)
-#     ex5_helper.save_image(new_image, cartoon_dest)
+if __name__ == "__main__":
+    image_source, \
+    cartoon_dest, \
+    max_im_size, \
+    blur_size, \
+    th_block_size, \
+    th_c, \
+    quant_num_shades = argv[1:]
+    image = ex5_helper.load_image(image_source)
+    max_im_size = int(max_im_size)
+    if len(image) > max_im_size or len(image[0]) > max_im_size:
+        if len(image) > len(image[0]):
+            ratio: float = float(max_im_size / len(image))
+            resize_image(image, max_im_size, len(image[0])*ratio)
+        else:
+            ratio: float = float(max_im_size / len(image[0]))
+            resize_image(image, len(image)*ratio, max_im_size)
 
-# print(resize([[1,2,3], [4,5,6], [7,8,9]], 4,4))
+    new_image = cartoonify(image, blur_size, th_block_size, th_c, quant_num_shades)
+    ex5_helper.save_image(new_image, cartoon_dest)

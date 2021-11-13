@@ -1,11 +1,26 @@
+#################################################################
+# FILE : cartoonify.py
+# WRITER : eyal , eyalmutzary , 206910432
+# EXERCISE : intro2cs ex5 2021
+# DESCRIPTION: Image proccesing script
+# STUDENTS I DISCUSSED THE EXERCISE WITH:
+# WEB PAGES I USED:
+# NOTES: ...
+#################################################################
+
 from typing import List
 from copy import deepcopy
 from math import floor, sqrt
 from sys import argv
 import ex5_helper
 
-# tested
+
 def separate_channels(image: List[List[List[int]]]):
+    """
+        Seperates an image to channels
+        :param image - an image with 1 or more channels
+        :return a list with all channels seperated
+    """
     if image == [[[]]]:
         return image
     new_lst: List[List[List[int]]] = []
@@ -20,8 +35,12 @@ def separate_channels(image: List[List[List[int]]]):
     return new_lst
 
 
-#tested
 def combine_channels(channels: List[List[List[int]]]):
+    """
+        Combines multiple channels to an image
+        :param channels - a list of 2D list of channels
+        :return an image as a 3D list
+    """
     if channels == [[[]]]:
         return [[[]]]
     combined_image = []
@@ -34,8 +53,12 @@ def combine_channels(channels: List[List[List[int]]]):
     return combined_image
 
 
-# tested
 def RGB2grayscale(colored_image: List[List[List[int]]]):
+    """
+        Turns RGB channels to a single channel
+        :param colored_image - an image to grayscale
+        :return a grayscaled image (2D list)
+    """
     new_image: List[List[int]] = []
     for i in range(len(colored_image)):
         new_image.append([])
@@ -47,10 +70,14 @@ def RGB2grayscale(colored_image: List[List[List[int]]]):
     return new_image
 
 
-# works
 def blur_kernel(size: int):
+    """
+        creates a 2d list by the blur size
+        :param size - blur kernel size
+        :return a 2D list of the blur kernel
+    """
     result: List[List[int]] = []
-    size = int(size) # EDITED
+    size = int(size)
     for _ in range(size):
         inner_list = []
         for _ in range(size):
@@ -59,8 +86,14 @@ def blur_kernel(size: int):
     return result
 
 
-# works
 def add_frame_to_image(image: List[List[int]], frame_val: int, k: int):
+    """
+        Adds a frame to a 2D list
+        :param image - a 2D list
+        :param frame_val - the value of the frame elements
+        :param k - adds a frame of the size (k-1)//2
+        :return a new framed list
+    """
     framed_image: List[List[int]] = deepcopy(image)
     for i in range(len(image)):
         for _ in range(2):
@@ -73,24 +106,15 @@ def add_frame_to_image(image: List[List[int]], frame_val: int, k: int):
     return framed_image
 
 
-# def get_pixel_area(image: List[List[int]], row: int, col: int, k: int):
-#     framed_image = deepcopy(add_frame_to_image(image, image[row][col], k))
-#     pixel_area: List[List[int]] = []
-#     if k > 1:
-#         row, col = row + int(((k-1)/2)+1), col + int(((k-1)/2))
-#         radius = int((k-1)/2)
-#     else:
-#         radius = 1
-#     i: int = row - radius - 1
-#     while i < row+radius:
-#         pixel_area.append(framed_image[i][col-radius:col+radius +1])
-#         i += 1
-#     return pixel_area
-
-# works
-
-
 def get_pixel_area(image: List[List[int]], row: int, col: int, k: int):
+    """
+        Picks a pixel in the channel and returns the area around it.
+        :param image - a 2D list (channel)
+        :param row - the row of the pixel
+        :param col - the col of the pixel
+        :param k - the length of one size of the square (k*k square)
+        :return a 2D list of the square around the pixel
+    """
     framed = False
     if k > 1:
         radius = int((k-1)/2)
@@ -117,8 +141,12 @@ def get_pixel_area(image: List[List[int]], row: int, col: int, k: int):
     return pixel_area
 
 
-# works
 def sum_matrix(matrix: List[List[int]]):
+    """
+        Calculate the sum of the elements in the matrix
+        :param matrix - a 2D list
+        :return the sum of the matrix
+    """
     total_sum: int = 0
     for row in range(len(matrix)):
         for col in range(len(matrix[row])):
@@ -126,8 +154,15 @@ def sum_matrix(matrix: List[List[int]]):
     return total_sum
 
 
-# works
-def apply_kernel_on_pixel(image, row, col, k):
+def apply_kernel_on_pixel(image: List[List[int]], row: int, col: int, k: int):
+    """
+        Applies the kernel on a single pixel
+        :param image - a 2D list (channel)
+        :param row - the row of the pixel
+        :param col - the col of the pixel
+        :param k - the length of one size of the square (k*k square)
+        :return The new value of the pixel
+    """
     pixel = round(sum_matrix(get_pixel_area(image, row, col, k)) * (1/(k**2)))
     if pixel > 255:
         pixel = 255
@@ -136,8 +171,13 @@ def apply_kernel_on_pixel(image, row, col, k):
     return pixel
 
 
-# tested
-def apply_kernel(image, kernel):
+def apply_kernel(image: List[List[int]], kernel: List[List[int]]):
+    """
+        applies a kernel on a channel
+        :param image - a 2D list (channel)
+        :param kernel - a 2D list of the kernel
+        :return a new kerneled channel
+    """
     k = sqrt(kernel[0][0]**-1)
     if k == 1:
         return image
@@ -148,21 +188,14 @@ def apply_kernel(image, kernel):
     return blurred_image
 
 
-# works - connected to bilinear_interpolation
-def check_xy_valid(y: float, x: float):
-    if x > 1:
-        x = 1
-    elif x < 0:
-        x = 0
-    if y > 1:
-        y = 1
-    elif y < 0:
-        y = 0
-    return y,x
-
-
-# More tests needed
 def bilinear_interpolation(image: List[List[int]], y: float, x: float):
+    """
+        Caculate the avg of a pixel between pixels
+        :param image - a 2D list (channel)
+        :param y - the row of the pixel
+        :param x - the col of the pixel
+        :return The pixel value
+    """
     a, b = y%1, x%1
     y, x = int(y), int(x)
 
@@ -187,8 +220,14 @@ def bilinear_interpolation(image: List[List[int]], y: float, x: float):
     return calc
 
 
-# Tested
-def resize(image: List[List[int]], new_height, new_width):
+def resize(image: List[List[int]], new_height: int, new_width: int):
+    """
+        Resizes a channel by new sizes
+        :param image - a 2D list (channel)
+        :param new_height - the new height of the image
+        :param new_width - the new width of the image
+        :return a new resized 2D List
+    """
     height_ratio: float = float(len(image) / new_height)
     width_ratio: float = float(len(image[0]) / new_width)
     new_image = []
@@ -210,6 +249,13 @@ def resize(image: List[List[int]], new_height, new_width):
 
 
 def resize_image(image: List[List[List[int]]], new_height, new_width):
+    """
+        Resizes an image by new sizes
+        :param image - a 3D list
+        :param new_height - the new height of the image
+        :param new_width - the new width of the image
+        :return a new resized image
+    """
     image_copy = deepcopy(image)
     image_copy = separate_channels(image_copy)
     new_image = []
@@ -218,8 +264,14 @@ def resize_image(image: List[List[List[int]]], new_height, new_width):
     new_image = combine_channels(new_image)
     return new_image
 
-# tested
+
 def rotate_90(image: List[List[int]], direction: str):
+    """
+        Rotates a channel 90 degrees
+        :param image - a 2D list (channel)
+        :param direction - could be R or L (Right or Left)
+        :return a new rotated 2D List
+    """
     new_image: List[List[int]] = []
     new_row: List[int] = []
     for i in range(len(image[0])):
@@ -234,8 +286,14 @@ def rotate_90(image: List[List[int]], direction: str):
     return None
 
 
-# works
 def calc_threshold(image: List[List[int]], row: int, col: int, k: int):
+    """
+        Caculate the threshold for a single pixel
+        :param image - a 2D list (channel)
+        :param row - the row of the pixel
+        :param col - the col of the pixel
+        :return the threshold
+    """
     k = int(k)
     if k > 1:
         pixel_area = get_pixel_area(image, row, col, k)
@@ -245,8 +303,15 @@ def calc_threshold(image: List[List[int]], row: int, col: int, k: int):
     return threshold
 
 
-# tested
 def get_edges(image: List[List[int]], blur_size:int , block_size: int, c:int):
+    """
+        finds the edges of the channel
+        :param image - a 2D list (channel)
+        :param blur_size - the amount of blurring
+        :param block_size - the size of the block to blur
+        :param c - a parameter to adjust the edge detection
+        :return a new edged channel
+    """
     blurred_image = apply_kernel(image, blur_kernel(blur_size))
     edged_image: List[List[int]] = []
     for row in range(len(image)):
@@ -260,8 +325,13 @@ def get_edges(image: List[List[int]], blur_size:int , block_size: int, c:int):
     return edged_image
 
 
-# tested
 def quantize(image: List[List[int]], N: int):
+    """
+        Doing a quantize proccess to a signle channel
+        :param image - a 2D list (channel)
+        :param N - the amount of colors
+        :return a new quantized channel
+    """
     new_channel: List[List[int]] = deepcopy(image)
     N = int(N)
     for row in range(len(new_channel)):
@@ -271,8 +341,13 @@ def quantize(image: List[List[int]], N: int):
     return new_channel
 
 
-# tested
-def quantize_colored_image(image, N):
+def quantize_colored_image(image: List[List[List[int]]], N:int):
+    """
+        Going for the quantize process for every channel
+        :param image - a 3D list (channel)
+        :param N - the amount fo colorss
+        :return a new quantized image
+    """
     image_copy = deepcopy(image)
     image_copy = separate_channels(image_copy)
     new_image = []
@@ -282,16 +357,28 @@ def quantize_colored_image(image, N):
     return new_image
 
 
-# works
 def mask_pixel(pixel1: int, pixel2: int, mask: int):
+    """
+        masks a single pixel
+        :param pixel1 - a pixel value
+        :param pixel2 - another pixel value
+        :param mask - the mask value
+        :return a masked pixel value
+    """
     if mask > 1:
         mask = 1
     new_pixel = round(pixel1* mask + pixel2* (1 - mask))
     return new_pixel
 
 
-# more tests needed
 def add_mask(image1, image2, mask):
+    """
+        adds a mask to an image
+        :param image1 - a 2D or 3D List
+        :param image2 - a 2D or 3D List
+        :param mask - a 2D List
+        :return a new masked image
+    """
     new_image = []
     is_multi_channel = type(image1[0][0]) == type(list())
     for row in range(len(image1)):
@@ -311,19 +398,20 @@ def add_mask(image1, image2, mask):
     return new_image
 
 
-"""
-seperate to channels
-for every channel:
-    get edges
-    quantize
-    add mask of edges
-combine channels
-"""
 def cartoonify(image: List[List[List[int]]],
                blur_size: int,
                th_block_size: int,
                th_c: int,
                quant_num_shades: int):
+    """
+        Doing the cartoonify effect to an image
+        :param image - a 3D List
+        :param blur_size - the amount of blurness
+        :param th_block_size - size of the block to determine the threshold
+        :param th_c - a parameter to reduce when using edge detection
+        :param quant_num_shades - amount of shades for quantize
+        :return a new cartoonified image
+    """
     new_image = separate_channels(deepcopy(image)) # seperate to channels
     for channel in range(len(new_image)):
         channel_edge = get_edges(new_image[channel], # getting edges
@@ -338,8 +426,7 @@ def cartoonify(image: List[List[List[int]]],
                                        quant_num_shades)
     return new_image
 
-# python3 cartoonify.py <image_source> <cartoon_dest> <max_im_size>
-# <blur_size> <th_block_size> <th_c> <quant_num_shades>
+
 if __name__ == "__main__":
     image_source, \
     cartoon_dest, \

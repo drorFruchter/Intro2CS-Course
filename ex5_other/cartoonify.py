@@ -196,7 +196,6 @@ def resize(image: List[List[int]], new_height, new_width):
     row_skip, col_skip = 0.0, 0.0
     while row_skip < len(image):
         new_image.append([])
-        print(row_skip)
         while col_skip < len(image[0]):
             new_image[new_row_i].append(bilinear_interpolation(image, row_skip, col_skip))
             col_skip += width_ratio
@@ -263,7 +262,7 @@ def get_edges(image: List[List[int]], blur_size:int , block_size: int, c:int):
 
 # tested
 def quantize(image: List[List[int]], N: int):
-    new_channel: List[List[int]] = image
+    new_channel: List[List[int]] = deepcopy(image)
     N = int(N)
     for row in range(len(new_channel)):
         for col in range(len(new_channel[row])):
@@ -274,12 +273,12 @@ def quantize(image: List[List[int]], N: int):
 
 # tested
 def quantize_colored_image(image, N):
-    new_image = image
-    for channel in range(len(new_image)):
-        try:
-            new_image[channel] = quantize(new_image[channel], N)
-        except: # when went over all channels
-            break
+    image_copy = deepcopy(image)
+    image_copy = separate_channels(image_copy)
+    new_image = []
+    for channel in range(len(image_copy)):
+        new_image.append(quantize(image_copy[channel], N))
+    new_image = combine_channels(new_image)
     return new_image
 
 
@@ -337,7 +336,6 @@ def cartoonify(image: List[List[List[int]]],
     new_image = combine_channels(new_image)
     new_image = quantize_colored_image(new_image, # quantize
                                        quant_num_shades)
-    print(len(image), len(new_image))
     return new_image
 
 # python3 cartoonify.py <image_source> <cartoon_dest> <max_im_size>

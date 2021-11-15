@@ -172,7 +172,7 @@ def get_series_list_by_direction(matrix:List[List[str]], direction):
             series_list.append(''.join(row))
 
     elif direction == "d" or direction == "u":
-        handle_direction_d_or_u(matrix,series_list)
+        handle_direction_d_or_u(matrix, series_list)
 
     elif direction == 'w' or direction == 'z':
         handle_direction_w_or_z(matrix, series_list)

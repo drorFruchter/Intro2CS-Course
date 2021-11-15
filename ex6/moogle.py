@@ -58,6 +58,9 @@ def crawl(base_url: str, index_file: str, out_file: str):
     save_dict(traffic_dict, out_file)
 
 
+# ------- Part 2 ---------
+
+
 def read_pickle(dict_file: str):
     with open(dict_file, "rb") as f:
         d = pickle.load(f)
@@ -80,6 +83,9 @@ def page_rank(iterations: int, dict_file: str, out_file: str):
     for _ in range(iterations):
         ranks_dict = iterate_page_rank(dict_list, ranks_dict)
     save_dict(ranks_dict, out_file)
+
+
+# ------- Part 3 ---------
 
 
 def get_words_index(base_url: str, index: str, word_dict):
@@ -109,6 +115,71 @@ def word_dict(base_url: str, index_file: str, out_file: str):
     save_dict(word_dict, out_file)
 
 
+# ------- Part 4 ---------
+"""
+- Read ranking dict pickle
+- Read words dict
+- Sort ranking dict
+for every index in the top <max_results>:
+    - calc the score:
+        - check if all words in the index
+        - get the minimum of them
+        - Z * Y
+    - add score to dictionary [index: score]
+- Sort dictionary
+- Add results to results.txt
+"""
+
+def sort_dict(ranking_dict):
+    sorted_dict: Dict[str: float] = {}
+    values = list(ranking_dict.values())
+    values.sort()
+    values.reverse()
+    for i in values:
+        sorted_dict[list(ranking_dict.keys())\
+                    [list(ranking_dict.values()).index(i)]] = i
+    return sorted_dict
+
+
+def write_result(results_dict):
+    txt = ""
+    for word in results_dict:
+        txt += word + " " + str(results_dict[word]) + "\n"
+    txt += "*" * 10 + "\n"
+    with open('results.txt', 'a') as f:
+        f.write(txt)
+
+
+def search(query: str,
+           ranking_dict_file: str,
+           words_dict_file: str,
+           max_results: int):
+    ranking_dict = read_pickle(ranking_dict_file)
+    words_dict = read_pickle(words_dict_file)
+    sorted_ranking_dict = sort_dict(ranking_dict)
+    result_counter = 0
+    result_dict = {}
+    query = query.split(" ")
+    for index in sorted_ranking_dict:
+        occurence_list = []
+        for word in query:
+            if word in words_dict:
+                if index in words_dict[word]:
+                    occurence_list.append(words_dict[word][index])
+            else:
+                break
+
+        if len(occurence_list) == len(query):
+            print(min(occurence_list))
+            result_dict[index] = min(occurence_list) * sorted_ranking_dict[index]
+            result_counter += 1
+        if result_counter == max_results:
+            break
+    result_dict = sort_dict(result_dict)
+    write_result(result_dict)
+
+
+
 if __name__ == "__main__":
     base_url = "https://www.cs.huji.ac.il/~intro2cs1/ex6/wiki/"
     index_file = "small_index.txt"
@@ -116,6 +187,5 @@ if __name__ == "__main__":
     # page_rank(2, "out.pickle", "page_rank.pickle")
     # crawl(base_url, index_file, out_file)
     # get_words_index(base_url, 'Draco_Malfoy.html', {}
-    print(word_dict(base_url, index_file, "word_dict.pickle"))
-
-
+    # print(word_dict(base_url, index_file, "word_dict.pickle"))
+    # search("scar Crookshanks", "page_rank.pickle", "word_dict.pickle", 5)

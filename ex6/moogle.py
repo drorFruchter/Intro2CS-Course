@@ -53,7 +53,6 @@ def collect_all_data(base_url: str, index_file: str):
 
 def crawl(base_url: str, index_file: str, out_file: str):
     traffic_dict = collect_all_data(base_url, index_file)
-    print(traffic_dict)
     save_dict(traffic_dict, out_file)
 
 
@@ -77,7 +76,6 @@ def iterate_page_rank(dict_list, ranks_dict: Dict):
 
 def page_rank(iterations: int, dict_file: str, out_file: str):
     dict_list: Dict[str: Dict[str: int]] = read_pickle(dict_file)
-    # dict_list = {"Hogwarts": {"Harry Potter": 1}, "Harry Potter": {"Hermione Granger": 1, "Draco Malfoy": 1}, "Hermione Granger": {"Harry Potter": 1}, "Draco Malfoy": {}}
     ranks_dict: Dict[str: float] = {val:1 for val in dict_list}
     for _ in range(iterations):
         ranks_dict = iterate_page_rank(dict_list, ranks_dict)
@@ -93,7 +91,7 @@ def get_words_index(base_url: str, index: str, word_dict):
     for p in soup.find_all("p"):
         words = p.text.split(' ')
         # words = ["".join(e for e in words if e.isalpha()) for words in content]
-        # words = [word for word in words if word != '']
+        words = [word for word in words if word != '']
         for word in words:
             if word in word_dict:
                 if index in word_dict[word]:
@@ -143,6 +141,7 @@ def search(query: str,
            max_results: int):
     ranking_dict = read_pickle(ranking_dict_file)
     words_dict = read_pickle(words_dict_file)
+    # print(words_dict == {'a': {'A.html': 4, 'B.html': 4, 'C.html': 2}, 'b': {'A.html': 2, 'B.html': 1, 'C.html': 1}, 'c': {'A.html': 1, 'B.html': 1, 'C.html': 6}, 'd': {'A.html': 2, 'B.html': 2, 'C.html': 1}, 'f': {'A.html': 2}, 'g': {'A.html': 2, 'B.html': 1}, 'h': {'A.html': 2, 'B.html': 3, 'C.html': 2}, 'e': {'A.html': 1, 'B.html': 1, 'C.html': 1}})
     sorted_ranking_dict = sort_dict(ranking_dict)
     result_counter = 0
     result_dict = {}
@@ -161,8 +160,8 @@ def search(query: str,
             result_counter += 1
         if result_counter == max_results:
             break
-
     result_dict = sort_dict(result_dict)
+    # print(result_dict)
     write_result(result_dict)
 
 
@@ -185,12 +184,13 @@ def main():
 
 
 if __name__ == "__main__":
+    main()
     # base_url = "https://www.cs.huji.ac.il/~intro2cs1/ex6/wiki/"
     # index_file = "small_index.txt"
     # out_file = "out.pickle"
-    main()
+    # main()
     # page_rank(2, "out.pickle", "page_rank.pickle")
     # crawl(base_url, index_file, out_file)
     # get_words_index(base_url, 'Draco_Malfoy.html', {}
     # print(word_dict(base_url, index_file, "word_dict.pickle"))
-    # search("scar", "page_rank.pickle", "word_dict.pickle", 5)
+    # search("a b", "tests/page_rank.pickle", "tests/words_dict.pickle", 2)

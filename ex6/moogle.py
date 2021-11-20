@@ -14,6 +14,7 @@ import pickle
 import urllib.parse
 import requests
 import bs4
+from collections import OrderedDict
 
 
 def read_index_file(index_file: str):
@@ -187,7 +188,6 @@ def word_dict(base_url: str, index_file: str, out_file: str):
         get_words_index(base_url, index, word_dict)
     save_dict(word_dict, out_file)
 
-
 # ------- Part 4 ---------
 
 
@@ -197,14 +197,17 @@ def sort_dict(ranking_dict):
        :param ranking_dict - the ranking dictionary
        :return an updated dictionary
    """
-    sorted_dict: Dict[str: float] = {}
-    values = list(ranking_dict.values())
-    values.sort()
-    values.reverse()
-    for i in values:
-        sorted_dict[list(ranking_dict.keys())\
-                    [list(ranking_dict.values()).index(i)]] = i
-    return sorted_dict
+    sorted_dict = [(index, ranking_dict[index]) for index in ranking_dict]
+    if len(sorted_dict) <= 1:
+        return ranking_dict
+    is_sorted = False
+    while not is_sorted:
+        is_sorted = True
+        for i in range(len(sorted_dict)-1):
+            if sorted_dict[i+1][1] > sorted_dict[i][1]:
+                sorted_dict[i+1], sorted_dict[i] = sorted_dict[i], sorted_dict[i+1]
+                is_sorted = False
+    return dict(sorted_dict)
 
 
 def write_result(results_dict):
@@ -238,20 +241,26 @@ def search(query: str,
     result_counter = 0
     result_dict = {}
     query = query.split(" ")
+    new_query = []
+    for word in range(len(query)):
+        if query[word] in words_dict:
+            new_query.append(query[word])
+
     for index in sorted_ranking_dict:
         occurence_list = []
-        for word in query:
+        for word in new_query:
             if word in words_dict:
                 if index in words_dict[word]:
                     occurence_list.append(words_dict[word][index])
             else:
                 break
 
-        if len(occurence_list) == len(query):
+        if len(occurence_list) == len(new_query):
             result_dict[index] = min(occurence_list) * sorted_ranking_dict[index]
             result_counter += 1
         if result_counter == max_results:
             break
+
     result_dict = sort_dict(result_dict)
     write_result(result_dict)
 

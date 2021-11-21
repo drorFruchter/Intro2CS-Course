@@ -14,7 +14,6 @@ import pickle
 import urllib.parse
 import requests
 import bs4
-from collections import OrderedDict
 
 
 def read_index_file(index_file: str):
@@ -162,7 +161,7 @@ def get_words_index(base_url: str, index: str, word_dict):
     soup = bs4.BeautifulSoup(html, 'html.parser')
     for p in soup.find_all("p"):
         words = p.text.split(' ')
-        words = [word for word in words if word != '']
+        words = [word.strip() for word in words if word != '']
         for word in words:
             if word in word_dict:
                 if index in word_dict[word]:

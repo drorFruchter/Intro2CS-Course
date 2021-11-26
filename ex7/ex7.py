@@ -1,3 +1,12 @@
+#################################################################
+# FILE : ex7.py
+# WRITER : eyal , eyalmutzary , 206910432
+# EXERCISE : intro2cs ex7 2021
+# DESCRIPTION: Recursions!
+# STUDENTS I DISCUSSED THE EXERCISE WITH:
+# WEB PAGES I USED:
+# NOTES: ...
+#################################################################
 from typing import Any, List
 from ex7_helper import *
 
@@ -6,12 +15,23 @@ from ex7_helper import *
 
 
 def mult(x: float, y: int) -> float:
+    """
+        multiplies x * y
+        :param x - float
+        :param y - int
+        :return x * y
+    """
     if y == 0:
         return 0
     return add(x, mult(x, int(subtract_1(y))))
 
 
 def is_even(n: int) -> bool:
+    """
+        Checks if n is even
+        :param n - int
+        :return is even?
+    """
     if n == 1:
         return False
     elif n == 0:
@@ -20,6 +40,12 @@ def is_even(n: int) -> bool:
 
 
 def log_mult(x: float, y: int) -> float:
+    """
+        x * y, but O(log(n))
+        :param x - float
+        :param y - int
+        :return x * y
+    """
     if y == 0:
         return 0
     if is_odd(y):
@@ -29,12 +55,25 @@ def log_mult(x: float, y: int) -> float:
 
 
 def is_power(b: int, x: int) -> bool:
+    """
+        checks if b is power of x:
+        :param x - int
+        :param y - int
+        :return is power?
+    """
     if b == 0 or b == 1 or x == 0 or x == 1:
         return True
     return is_power_helper(b, x, b)
 
 
 def is_power_helper(b: int, x: int, c: int) -> bool:
+    """
+        helper funtion to is power
+        :param b - int
+        :param x - int
+        :param c - c = b
+        :return x * y
+    """
     if x == b:
         return True
     elif b > x:
@@ -44,10 +83,22 @@ def is_power_helper(b: int, x: int, c: int) -> bool:
 
 
 def reverse(s: str) -> str:
+    """
+        reverses a string
+        :param s - string
+        :return a reversed string
+    """
     return reverse_helper(s, len(s), '',)
 
 
 def reverse_helper(s: str, n: int, new_s: str) -> str:
+    """
+        helper funtion to reverse
+        :param s - string
+        :param n - len of s
+        :param new_s - the new string
+        :return revered string s
+    """
     if n == 0:
         return new_s
     else:
@@ -57,7 +108,15 @@ def reverse_helper(s: str, n: int, new_s: str) -> str:
 # --------- Part 2 ---------
 
 
-def play_hanoi(hanoi: Any, n: int, src: Any, dst: Any, temp: Any):
+def play_hanoi(hanoi: Any, n: int, src: Any, dst: Any, temp: Any) -> None:
+    """
+        Solves the tower of Hanoi. Gets objects from hanoi_game.py
+        :param hanoi - float
+        :param n - int
+        :param src - Any
+        :param dst - Any
+        :param temp - Any
+    """
     if n <= 0:
         return
     if n == 1:
@@ -72,6 +131,11 @@ def play_hanoi(hanoi: Any, n: int, src: Any, dst: Any, temp: Any):
 
 
 def number_of_ones(n:int) -> int:
+    """
+        conts the number of ones from 1 to n
+        :param n - int
+        :return number of ones
+    """
     if n == 0:
         return 0
     else:
@@ -79,6 +143,11 @@ def number_of_ones(n:int) -> int:
 
 
 def count_ones(n: int) -> int:
+    """
+        counts the number of ones in n
+        :param n - int
+        :return number of ones in n
+    """
     if n == 0:
         return 0
     else:
@@ -89,6 +158,12 @@ def count_ones(n: int) -> int:
 
 
 def compare_2d_lists(l1: List[List[int]], l2: List[List[int]]) -> bool:
+    """
+        deep compare 2D lists
+        :param l1 - 2D list
+        :param l2 - 2D list
+        :return are they equal?
+    """
     if len(l1) != len(l2):
         return False
     else:
@@ -96,6 +171,12 @@ def compare_2d_lists(l1: List[List[int]], l2: List[List[int]]) -> bool:
 
 
 def compare_2d_lists_helper(l1: List[List[int]], l2: List[List[int]], index: int) -> bool:
+    """
+        an helper function
+        :param l1 - 2D list
+        :param l2 - 2D list
+        :return are they equal?
+    """
     if index == 0:
         return True
     else:
@@ -105,6 +186,12 @@ def compare_2d_lists_helper(l1: List[List[int]], l2: List[List[int]], index: int
 
 
 def compare_1d_lists(l1: List[int], l2: List[int], index: int) -> bool:
+    """
+        Compare 1D list
+        :param l1 - 1D list
+        :param l2 - 1D list
+        :return are they equal?
+    """
     if index == -1:
         return True
     else:
@@ -114,10 +201,21 @@ def compare_1d_lists(l1: List[int], l2: List[int], index: int) -> bool:
 
 
 def magic_list(n: int) -> List[Any]:
+    """
+        Makes a "magic" list
+        :param n - the depth of the list
+        :return a magic list
+    """
     return magic_list_helper(n, [])
 
 
 def magic_list_helper(n: int, lst: List[Any]) -> List[Any]:
+    """
+        an helper function
+        :param n - the depth of the list
+        :param lst - an empty list
+        :return a magic lst
+    """
     if n == 0:
         return lst
     else:
@@ -127,6 +225,13 @@ def magic_list_helper(n: int, lst: List[Any]) -> List[Any]:
 
 
 def magic_list_copy(n: int, lst: List[Any], new_lst: List[Any]) -> List[Any]:
+    """
+        gets a magic list, and returns a copy of it
+        :param n - the depth of the list
+        :param lst - the list to copy
+        :param new_lst - an empty list
+        :return a deep copy of the list
+    """
     if n == 0:
         return []
     else:

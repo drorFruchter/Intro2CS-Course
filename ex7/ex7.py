@@ -1,6 +1,7 @@
 from typing import Any, List
 from ex7_helper import *
 
+
 # --------- Part 1 ---------
 
 
@@ -57,13 +58,14 @@ def reverse_helper(s: str, n: int, new_s: str) -> str:
 
 
 def play_hanoi(hanoi: Any, n: int, src: Any, dst: Any, temp: Any):
+    if n <= 0:
+        return
     if n == 1:
         hanoi.move(src, dst)
     else:
-        play_hanoi(hanoi, n-1, src, dst, temp)
-        hanoi.move(src, temp)
-        hanoi.move(dst, temp)
-        play_hanoi(hanoi, n-1, temp, src, dst)
+        play_hanoi(hanoi, n-1, src, temp, dst)
+        hanoi.move(src, dst)
+        play_hanoi(hanoi, n-1, temp, dst, src)
 
 
 # --------- Part 3 ---------
@@ -111,40 +113,23 @@ def compare_1d_lists(l1: List[int], l2: List[int], index: int) -> bool:
         return compare_1d_lists(l1, l2, index-1) and l1[index-1] == l2[index-1]
 
 
+def magic_list(n: int) -> List[Any]:
+    return magic_list_helper(n, [])
 
 
-
-def exp_n_x(n, x):
-    if n < 0:
-        return None
-    elif n == 0:
-        return 1
-    elif n == 1:
-        return x+1
-    elif n > 1:
-        return exp_n_x(n-1, x) + ((x**n) / factorial(n))
-
-
-def factorial(n):
+def magic_list_helper(n: int, lst: List[Any]) -> List[Any]:
     if n == 0:
-        return 1
+        return lst
     else:
-        return factorial(n-1) * n
+        magic_list_helper(n-1, lst)
+        lst.append(magic_list_copy(n-1, lst, []))
+        return lst
 
 
-
-
-
-# def helper(n, k, path, lst):
-#     if n == 0 and k == 0:
-#         lst.append(path)
-#     if n > 0:
-#         helper(n-1, k, path + "r", lst)
-#     if k > 0:
-#         helper(n, k-1, path + "u", lst)
-#
-#
-# def up_and_right(n, k, lst):
-#     path = ''
-#     helper(n, k, path, lst)
-#     return lst
+def magic_list_copy(n: int, lst: List[Any], new_lst: List[Any]) -> List[Any]:
+    if n == 0:
+        return []
+    else:
+        magic_list_copy(n-1, lst, new_lst)
+        new_lst.insert(0, magic_list_copy(len(lst) - n, lst[len(lst) - n], []))
+        return new_lst

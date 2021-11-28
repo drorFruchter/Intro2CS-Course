@@ -57,29 +57,40 @@ def log_mult(x: float, y: int) -> float:
 def is_power(b: int, x: int) -> bool:
     """
         checks if b is power of x:
+        :param b - int
         :param x - int
-        :param y - int
         :return is power?
     """
-    if b == 0 or b == 1 or x == 0 or x == 1:
+    if x == 1:
         return True
+    elif b == 0 and x > 1:
+        return False
+    elif b == 0 and (x == 0 or x == 1):
+        return True
+    elif b > x:
+        return False
+
     return is_power_helper(b, x, b)
 
 
 def is_power_helper(b: int, x: int, c: int) -> bool:
     """
-        helper funtion to is power
+        checks if b is power of x:
         :param b - int
         :param x - int
         :param c - c = b
-        :return x * y
+        :return is power?
     """
     if x == b:
         return True
     elif b > x:
+        return
+    if b == add(x,1):
         return False
     else:
-        return is_power_helper(int(log_mult(b,c)), x, c)
+        is_power_helper(int(log_mult(b,b)), x, c)
+        b = int(log_mult(b, c))
+        return is_power_helper(b, x, c) or False
 
 
 def reverse(s: str) -> str:
@@ -236,5 +247,5 @@ def magic_list_copy(n: int, lst: List[Any], new_lst: List[Any]) -> List[Any]:
         return []
     else:
         magic_list_copy(n-1, lst, new_lst)
-        new_lst.insert(0, magic_list_copy(len(lst) - n, lst[len(lst) - n], []))
+        new_lst.append(magic_list_copy(len(lst) - n, lst[len(lst) - n], []))
         return new_lst

@@ -84,8 +84,8 @@ def is_power_helper(b: int, x: int, c: int) -> bool:
     if x == b:
         return True
     elif b > x:
-        return
-    if b == add(x,1):
+        return False
+    if b == add(x, 1):
         return False
     else:
         is_power_helper(int(log_mult(b,b)), x, c)

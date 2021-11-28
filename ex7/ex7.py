@@ -70,15 +70,16 @@ def is_power(b: int, x: int) -> bool:
     elif b > x:
         return False
 
-    return is_power_helper(b, x, b)
+    return is_power_helper(b, x, b, b)
 
 
-def is_power_helper(b: int, x: int, c: int) -> bool:
+def is_power_helper(b: int, x: int, c: int, new_b: int) -> bool:
     """
         checks if b is power of x:
         :param b - int
         :param x - int
-        :param c - c = b
+        :param c = b
+        :param new_b = b
         :return is power?
     """
     if x == b:
@@ -88,9 +89,10 @@ def is_power_helper(b: int, x: int, c: int) -> bool:
     if b == add(x, 1):
         return False
     else:
-        is_power_helper(int(log_mult(b,b)), x, c)
+        power = int(log_mult(b,new_b))
+        is_power_helper(power, x, c, power)
         b = int(log_mult(b, c))
-        return is_power_helper(b, x, c) or False
+        return is_power_helper(b, x, c, c) or False
 
 
 def reverse(s: str) -> str:
@@ -217,7 +219,11 @@ def magic_list(n: int) -> List[Any]:
         :param n - the depth of the list
         :return a magic list
     """
-    return magic_list_helper(n, [])
+    if n == 0:
+        return []
+    elif n == 1:
+        return [[]]
+    return magic_list_helper(n-1, [])
 
 
 def magic_list_helper(n: int, lst: List[Any]) -> List[Any]:
@@ -228,24 +234,9 @@ def magic_list_helper(n: int, lst: List[Any]) -> List[Any]:
         :return a magic lst
     """
     if n == 0:
-        return lst
+        lst.append([])
     else:
         magic_list_helper(n-1, lst)
-        lst.append(magic_list_copy(n-1, lst, []))
+        lst.append([])
+        magic_list_helper(n-1, lst[n])
         return lst
-
-
-def magic_list_copy(n: int, lst: List[Any], new_lst: List[Any]) -> List[Any]:
-    """
-        gets a magic list, and returns a copy of it
-        :param n - the depth of the list
-        :param lst - the list to copy
-        :param new_lst - an empty list
-        :return a deep copy of the list
-    """
-    if n == 0:
-        return []
-    else:
-        magic_list_copy(n-1, lst, new_lst)
-        new_lst.append(magic_list_copy(len(lst) - n, lst[len(lst) - n], []))
-        return new_lst

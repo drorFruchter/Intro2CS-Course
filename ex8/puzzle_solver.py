@@ -104,22 +104,17 @@ def min_seen_cells(picture: Picture, row: int, col: int) -> int:
             _seen_col(picture, row, col, False)
 
 
-"""
-    - Loop every constraint
-        - Calc min and max
-        - Compare it to the number
-        - if equals - Great
-        - if between - Good
-        - if less - Bad
-"""
+# tested
 def check_constraints(picture: Picture, constraints_set: Set[Constraint]) -> int:
     status = 1
     for const in constraints_set:
-        min = min_seen_cells(picture, const[0], const[1])
-        max = max_seen_cells(picture, const[0], const[1])
-        if const[2] < min or const[2] > max:
+        min_seen = min_seen_cells(picture, const[0], const[1])
+        max_seen = max_seen_cells(picture, const[0], const[1])
+        if const[2] < min_seen or const[2] > max_seen:
             return 0
-        if min <= const[2] <= max and min != max:
+        elif const[2] == min_seen and const[2] == max_seen:
+            continue
+        elif min_seen <= const[2] <= max_seen:
             status = 2
     return status
 

@@ -9,7 +9,7 @@ Constraint = Tuple[int, int, int]
 # ---------- Prolog ----------
 
 
-def create_default_picture(n: int, m: int) -> List[List[int]]:
+def create_default_picture(n: int, m: int) -> Picture:
     picture = []
     for i in range(n):
         picture.append([])
@@ -18,8 +18,7 @@ def create_default_picture(n: int, m: int) -> List[List[int]]:
     return picture
 
 
-def add_constraints_set(n: int, m: int, constraint_set: Set[Constraint]) -> List[List[int]]:
-    picture = create_default_picture(n, m)
+def append_constraints_set(picture: Picture, constraint_set: Set[Constraint]) -> List[List[int]]:
     for constraint in constraint_set:
         picture[constraint[0]][constraint[1]] = constraint[2]
     return picture
@@ -119,9 +118,58 @@ def check_constraints(picture: Picture, constraints_set: Set[Constraint]) -> int
     return status
 
 
+# def copy_picture(picture: Picture):
+#     new_picture = []
+#     for i in range(len(picture)):
+#         new_picture.append([])
+#         for j in range(len(picture[i])):
+#             new_picture[i].append(picture[i][j])
+#     return new_picture
+
+
+def official_solution(picture):
+    new_picture = []
+    for i in range(len(picture)):
+        new_picture.append([])
+        for j in range(len(picture[i])):
+            if picture[i][j] == 0:
+                new_picture[i].append(0)
+            else:
+                new_picture[i].append(1)
+    return new_picture
+
+
+def _solve_puzzle_helper(picture: Picture, ind: int, constraints_set: Set[Constraint], sol: List[Picture]) -> Optional[Picture]:
+    check = check_constraints(picture, constraints_set)
+    if ind == len(picture) * len(picture[0]):
+        if check == 1:
+            solution = official_solution(picture)
+            sol.append(solution)
+            print(solution)
+        return picture
+
+    row, col = ind // len(picture[0]), ind % len(picture[0])
+
+    if picture[row][col] != -1:
+        _solve_puzzle_helper(picture, ind + 1, constraints_set, sol)
+        return
+
+    if check == 2:
+        for value in (0, 1):
+            picture[row][col] = value
+            _solve_puzzle_helper(picture, ind + 1, constraints_set, sol)
+    picture[row][col] = -1
+
 
 def solve_puzzle(constraints_set: Set[Constraint], n: int, m: int) -> Optional[Picture]:
-    ...
+    picture = create_default_picture(n, m)
+    append_constraints_set(picture, constraints_set)
+    sol = []
+    _solve_puzzle_helper(picture, 0, constraints_set, sol)
+    if len(sol) > 0:
+        return sol
+    else:
+        return None
 
 
 def how_many_solutions(constraints_set: Set[Constraint], n: int, m: int) -> int:

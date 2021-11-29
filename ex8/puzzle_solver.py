@@ -19,6 +19,8 @@ def create_default_picture(n: int, m: int) -> Picture:
 
 
 def append_constraints_set(picture: Picture, constraint_set: Set[Constraint]) -> List[List[int]]:
+    if constraint_set == set():
+        return picture
     for constraint in constraint_set:
         picture[constraint[0]][constraint[1]] = constraint[2]
     return picture
@@ -106,6 +108,9 @@ def min_seen_cells(picture: Picture, row: int, col: int) -> int:
 # tested
 def check_constraints(picture: Picture, constraints_set: Set[Constraint]) -> int:
     status = 1
+    if constraints_set == set():
+        return 1
+
     for const in constraints_set:
         min_seen = min_seen_cells(picture, const[0], const[1])
         max_seen = max_seen_cells(picture, const[0], const[1])
@@ -127,7 +132,7 @@ def check_constraints(picture: Picture, constraints_set: Set[Constraint]) -> int
 #     return new_picture
 
 
-def official_solution(picture):
+def formal_solution(picture):
     new_picture = []
     for i in range(len(picture)):
         new_picture.append([])
@@ -139,11 +144,14 @@ def official_solution(picture):
     return new_picture
 
 
-def _solve_puzzle_helper(picture: Picture, ind: int, constraints_set: Set[Constraint], sol: List[Picture]) -> Optional[Picture]:
+def _solve_puzzle_helper(picture: Picture,
+                         ind: int,
+                         constraints_set: Set[Constraint],
+                         sol: List[Picture]) -> Optional[Picture]:
     check = check_constraints(picture, constraints_set)
     if ind == len(picture) * len(picture[0]):
         if check == 1:
-            solution = official_solution(picture)
+            solution = formal_solution(picture)
             sol.append(solution)
             print(solution)
         return picture
@@ -154,7 +162,7 @@ def _solve_puzzle_helper(picture: Picture, ind: int, constraints_set: Set[Constr
         _solve_puzzle_helper(picture, ind + 1, constraints_set, sol)
         return
 
-    if check == 2:
+    if check == 2 or check == 1:
         for value in (0, 1):
             picture[row][col] = value
             _solve_puzzle_helper(picture, ind + 1, constraints_set, sol)
@@ -166,6 +174,7 @@ def solve_puzzle(constraints_set: Set[Constraint], n: int, m: int) -> Optional[P
     append_constraints_set(picture, constraints_set)
     sol = []
     _solve_puzzle_helper(picture, 0, constraints_set, sol)
+    print(sol)
     if len(sol) > 0:
         return sol
     else:
@@ -173,7 +182,7 @@ def solve_puzzle(constraints_set: Set[Constraint], n: int, m: int) -> Optional[P
 
 
 def how_many_solutions(constraints_set: Set[Constraint], n: int, m: int) -> int:
-    ...
+    return len(solve_puzzle(constraints_set, n, m))
 
 
 def generate_puzzle(picture: Picture) -> Set[Constraint]:

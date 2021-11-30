@@ -40,7 +40,7 @@ def print_picture(picture: List[List[int]]) -> None:
         print()
 
 
-# ---------- Part 1 ----------
+# ---------- Part 1 -----------
 
 
 def _should_break(num: int, is_max: bool) -> bool:
@@ -100,6 +100,8 @@ def min_seen_cells(picture: Picture, row: int, col: int) -> int:
             _seen_col(picture, row, col, False)
 
 
+# ---------- Part 2 -----------
+
 # tested
 def check_constraints(picture: Picture, constraints_set: Set[Constraint]) -> int:
     status = 1
@@ -118,13 +120,7 @@ def check_constraints(picture: Picture, constraints_set: Set[Constraint]) -> int
     return status
 
 
-# def copy_picture(picture: Picture):
-#     new_picture = []
-#     for i in range(len(picture)):
-#         new_picture.append([])
-#         for j in range(len(picture[i])):
-#             new_picture[i].append(picture[i][j])
-#     return new_picture
+# ---------- Part 3 -----------
 
 
 def formal_solution(picture):
@@ -174,6 +170,8 @@ def solve_puzzle(constraints_set: Set[Constraint], n: int, m: int) -> Optional[P
         return None
 
 
+# ---------- Part 4 -----------
+
 
 def _count_solutions(picture: Picture,
                      ind: int,
@@ -208,16 +206,64 @@ def how_many_solutions(constraints_set: Set[Constraint], n: int, m: int) -> int:
     return counter[0]
 
 
+# ---------- Part 5 -----------
 
-"""
-    - switch all 1 to -1
-    - loop on the picture:
-        - if value is 0 or -2 -> continue
-        - else:
-            - go for min scan.
-            - set the value to the min score
-            - set -2 to every square around
-            
-"""
+
+def prep_picture(picture: Picture):
+    for row in range(len(picture)):
+        for col in range(len(picture[row])):
+            if picture[row][col] == 1:
+                picture[row][col] = -1
+
+
+def loop_row(picture: Picture, row: int, col: int):
+    for i in range(col+1, len(picture[row]), 1):
+        if picture[row][i] == 0:
+            break
+        picture[row][i] = -2
+    for i in range(col-1, -1, -1):
+        if picture[row][i] == 0:
+            break
+        picture[row][i] = -2
+
+
+def loop_col(picture: Picture, row: int, col: int):
+    for i in range(row+1, len(picture), 1):
+        if picture[i][col] == 0:
+            break
+        picture[i][col] = -2
+    for i in range(row, -1, -1):
+        if picture[i][col] == 0:
+            break
+        picture[i][col] = -2
+
+
+def copy_picture(picture: Picture):
+    new_picture = []
+    for i in range(len(picture)):
+        new_picture.append([])
+        for j in range(len(picture[i])):
+            new_picture[i].append(picture[i][j])
+    return new_picture
+
+
 def generate_puzzle(picture: Picture) -> Set[Constraint]:
-    ...
+    constraint = set()
+    picture_copy = copy_picture(picture)
+    prep_picture(picture_copy) # CHANGES INPUT
+    for row in range(len(picture_copy)):
+        for col in range(len(picture_copy[row])):
+            if picture_copy[row][col] == -1:
+                value = max_seen_cells(picture_copy, row, col)
+                picture_copy[row][col] = value
+                loop_row(picture_copy, row, col)
+                loop_col(picture_copy, row, col)
+                constraint.add((row, col, value))
+            if picture_copy[row][col] == 0:
+                constraint.add((row, col, 0))
+    return constraint
+
+
+picture = [[1, 0, 0], [1, 1, 1]]
+print(generate_puzzle(picture))
+

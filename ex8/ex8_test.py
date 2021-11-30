@@ -38,6 +38,10 @@ def test_how_many_solutions():
     assert how_many_solutions({(0, 3, 3), (2, 0, 1)}, 3, 4) == 64
 
 
+def test_generate_puzzle():
+    assert generate_puzzle([[1, 0, 0], [1, 1, 1]]) == {(0, 0, 2), (1, 1, 3), (0, 1, 0), (0, 2, 0)}
+    assert generate_puzzle([[1]]) == {(0, 0, 1)}
+
 
 def main():
     test_max_seen_cells()

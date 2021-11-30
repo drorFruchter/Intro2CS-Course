@@ -10,6 +10,12 @@ Constraint = Tuple[int, int, int]
 
 
 def create_default_picture(n: int, m: int) -> Picture:
+    """
+        Creates a picture of all -1
+        :param n- row
+        :param m - col
+        :return Picture
+    """
     picture = []
     for i in range(n):
         picture.append([])
@@ -18,7 +24,14 @@ def create_default_picture(n: int, m: int) -> Picture:
     return picture
 
 
-def append_constraints_set(picture: Picture, constraint_set: Set[Constraint]) -> List[List[int]]:
+def append_constraints_set(picture: Picture, constraint_set: Set[Constraint])\
+        -> List[List[int]]:
+    """
+        Appends a contraints set on a picture
+        :param picture - Picture
+        :param constraint_set - the Constraints set
+        :return the updated picture
+    """
     if constraint_set == set():
         return picture
     for constraint in constraint_set:
@@ -27,14 +40,18 @@ def append_constraints_set(picture: Picture, constraint_set: Set[Constraint]) ->
 
 
 def print_picture(picture: List[List[int]]) -> None:
+    """
+        prints a nice visual picture
+        :param picture - picture
+    """
     for i in range(len(picture)):
         for j in range(len(picture[i])):
             if picture[i][j] == -1:
                 print(" ? " , end="")
-            # elif picture[i][j] == 0:
-            #     print(" ■ " , end="")
-            # elif picture[i][j] == 1:
-            #     print(" □ " , end="")
+            elif picture[i][j] == 0:
+                print(" ■ " , end="")
+            elif picture[i][j] == 1:
+                print(" □ " , end="")
             else:
                 print(" " + str(picture[i][j]) + " " , end="")
         print()
@@ -44,6 +61,12 @@ def print_picture(picture: List[List[int]]) -> None:
 
 
 def _should_break(num: int, is_max: bool) -> bool:
+    """
+        if it encounters a 0 or -1
+        :param num - the value of the index
+        :param is_max - are we on is_max or is_min mode?
+        :return should break or not
+    """
     if is_max and num == 0:
         return True
     elif not is_max and num <= 0:
@@ -52,6 +75,13 @@ def _should_break(num: int, is_max: bool) -> bool:
 
 
 def _seen_row(row: List[int], col: int, is_max: bool):
+    """
+        loops on the row around the index
+        :param row - int
+        :param col - int
+        :param is_max - is_max - are we on is_max or is_min mode?
+        :return the number of indexes seen
+    """
     count: int = 0
     for i in range(col, len(row), 1):
         if _should_break(row[i], is_max):
@@ -67,6 +97,9 @@ def _seen_row(row: List[int], col: int, is_max: bool):
 
 
 def _seen_col(picture: Picture, row: int, col: int, is_max: bool):
+    """
+        same as seen row but for column
+    """
     count: int = 0
     for i in range(row, len(picture), 1):
         if _should_break(picture[i][col], is_max):
@@ -82,8 +115,14 @@ def _seen_col(picture: Picture, row: int, col: int, is_max: bool):
     return count
 
 
-# tested
 def max_seen_cells(picture: Picture, row: int, col: int) -> int:
+    """
+        sums all the max cells was seen - -1 counts as white
+        :param picture - Picture
+        :param row - int
+        :param col - int
+        :return the number of max cells seen
+    """
     if picture[row][col] == 0:
         return 0
     else:
@@ -91,8 +130,14 @@ def max_seen_cells(picture: Picture, row: int, col: int) -> int:
                _seen_col(picture, row, col, True)
 
 
-# tested
 def min_seen_cells(picture: Picture, row: int, col: int) -> int:
+    """
+        sums all the min cells was seen - -1 counts as black
+        :param picture - Picture
+        :param row - int
+        :param col - int
+        :return the number of min cells seen
+    """
     if picture[row][col] <= 0:
         return 0
     else:
@@ -102,8 +147,17 @@ def min_seen_cells(picture: Picture, row: int, col: int) -> int:
 
 # ---------- Part 2 -----------
 
-# tested
-def check_constraints(picture: Picture, constraints_set: Set[Constraint]) -> int:
+
+def check_constraints(picture: Picture, constraints_set: Set[Constraint])\
+        -> int:
+    """
+        checks if the current picture is valid
+        :param picture - Picture
+        :param constraints_set - Contraint
+        :return 0 - not valid,
+                1 - exactly valid,
+                2 - not valid on max, valid on min
+    """
     status = 1
     if constraints_set == set():
         return 1
@@ -123,7 +177,12 @@ def check_constraints(picture: Picture, constraints_set: Set[Constraint]) -> int
 # ---------- Part 3 -----------
 
 
-def formal_solution(picture):
+def formal_solution(picture: Picture) -> Optional[Picture]:
+    """
+        Change all values of a picture to be either 0 or 1
+        :param picture - Picture
+        :return the number of max cells seen
+    """
     new_picture = []
     for i in range(len(picture)):
         new_picture.append([])
@@ -138,12 +197,19 @@ def formal_solution(picture):
 def _solve_puzzle_helper(picture: Picture,
                          ind: int,
                          constraints_set: Set[Constraint],
-                         sol: List[Picture]) -> Optional[Picture]:
+                         sol: List[Picture]) -> None:
+    """
+        Backtracking function to find a single solution to the puzzle
+        :param picture - Picture
+        :param ind - index pointer
+        :param constraints_set - all the constraints
+        :param sol - the first solution found (if there is)
+    """
     check = check_constraints(picture, constraints_set)
     if ind == len(picture) * len(picture[0]):
         if check == 1 and len(sol) == 0:
             sol.append(formal_solution(picture))
-        return picture
+        return
 
     row, col = ind // len(picture[0]), ind % len(picture[0])
 
@@ -159,7 +225,15 @@ def _solve_puzzle_helper(picture: Picture,
     picture[row][col] = -1
 
 
-def solve_puzzle(constraints_set: Set[Constraint], n: int, m: int) -> Optional[Picture]:
+def solve_puzzle(constraints_set: Set[Constraint], n: int, m: int) \
+        -> Optional[Picture]:
+    """
+        a function to solve the puzzle (with the helper function)
+        :param constraints_set - all the constraints
+        :param n - int
+        :param m - int
+        :return a solved puzzle or None
+    """
     picture = create_default_picture(n, m)
     append_constraints_set(picture, constraints_set)
     sol = []
@@ -177,6 +251,13 @@ def _count_solutions(picture: Picture,
                      ind: int,
                      constraints_set: Set[Constraint],
                      counter: List[int]) -> None:
+    """
+        a backtracking function to count how many solutions there are
+        :param picture - Picture
+        :param ind - index pointer
+        :param constraints_set - all the constraints
+        :param counter - counter of the solutions
+    """
     check = check_constraints(picture, constraints_set)
     if ind == len(picture) * len(picture[0]):
         if check == 1:
@@ -197,8 +278,15 @@ def _count_solutions(picture: Picture,
     picture[row][col] = -1
 
 
-
-def how_many_solutions(constraints_set: Set[Constraint], n: int, m: int) -> int:
+def how_many_solutions(constraints_set: Set[Constraint], n: int, m: int)\
+        -> int:
+    """
+        a funtion the finds how many soultions there are
+        :param constraints_set - Consrtraint
+        :param n - rows
+        :param m - columns
+        :return the amount of solutions to the puzzle
+    """
     picture = create_default_picture(n, m)
     append_constraints_set(picture, constraints_set)
     counter = [0]
@@ -209,14 +297,24 @@ def how_many_solutions(constraints_set: Set[Constraint], n: int, m: int) -> int:
 # ---------- Part 5 -----------
 
 
-def prep_picture(picture: Picture):
+def _prep_picture(picture: Picture):
+    """
+        changes every cell that is not 0 to -1
+        :param picture - Picture
+    """
     for row in range(len(picture)):
         for col in range(len(picture[row])):
             if picture[row][col] == 1:
                 picture[row][col] = -1
 
 
-def loop_row(picture: Picture, row: int, col: int):
+def _loop_row(picture: Picture, row: int, col: int):
+    """
+        by index, changes every seen cell in row to -2
+        :param picture - Picture
+        :param row - int
+        :param col - int
+    """
     for i in range(col+1, len(picture[row]), 1):
         if picture[row][i] == 0:
             break
@@ -227,7 +325,13 @@ def loop_row(picture: Picture, row: int, col: int):
         picture[row][i] = -2
 
 
-def loop_col(picture: Picture, row: int, col: int):
+def _loop_col(picture: Picture, row: int, col: int):
+    """
+        by index, changes every seen col to -2
+        :param picture - Picture
+        :param row - int
+        :param col - int
+    """
     for i in range(row+1, len(picture), 1):
         if picture[i][col] == 0:
             break
@@ -238,7 +342,12 @@ def loop_col(picture: Picture, row: int, col: int):
         picture[i][col] = -2
 
 
-def copy_picture(picture: Picture):
+def copy_picture(picture: Picture) -> Picture:
+    """
+        gets a picture and returns a copy of it
+        :param picture - Picture
+        :return a copy of the picture
+    """
     new_picture = []
     for i in range(len(picture)):
         new_picture.append([])
@@ -248,22 +357,23 @@ def copy_picture(picture: Picture):
 
 
 def generate_puzzle(picture: Picture) -> Set[Constraint]:
+    """
+        generates a set of constraints by a puzzle
+        :param picture - Picture
+        :return a set of constraints
+    """
     constraint = set()
     picture_copy = copy_picture(picture)
-    prep_picture(picture_copy) # CHANGES INPUT
+    _prep_picture(picture_copy)
     for row in range(len(picture_copy)):
         for col in range(len(picture_copy[row])):
             if picture_copy[row][col] == -1:
                 value = max_seen_cells(picture_copy, row, col)
                 picture_copy[row][col] = value
-                loop_row(picture_copy, row, col)
-                loop_col(picture_copy, row, col)
+                _loop_row(picture_copy, row, col)
+                _loop_col(picture_copy, row, col)
                 constraint.add((row, col, value))
-            if picture_copy[row][col] == 0:
+            elif picture_copy[row][col] == 0:
                 constraint.add((row, col, 0))
     return constraint
-
-
-picture = [[1, 0, 0], [1, 1, 1]]
-print(generate_puzzle(picture))
 

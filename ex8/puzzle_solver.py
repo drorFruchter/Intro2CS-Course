@@ -155,12 +155,11 @@ def _solve_puzzle_helper(picture: Picture,
         _solve_puzzle_helper(picture, ind + 1, constraints_set, sol)
         return
 
-    if check == 2 or check == 1:
-        for value in (0, 1):
-            if len(sol) == 1:
-                return
-            picture[row][col] = value
-            _solve_puzzle_helper(picture, ind + 1, constraints_set, sol)
+    for value in (0, 1):
+        if len(sol) == 1 or check == 0:
+            return
+        picture[row][col] = value
+        _solve_puzzle_helper(picture, ind + 1, constraints_set, sol)
     picture[row][col] = -1
 
 
@@ -175,10 +174,11 @@ def solve_puzzle(constraints_set: Set[Constraint], n: int, m: int) -> Optional[P
         return None
 
 
+
 def _count_solutions(picture: Picture,
-                         ind: int,
-                         constraints_set: Set[Constraint],
-                         counter: List[int]) -> None:
+                     ind: int,
+                     constraints_set: Set[Constraint],
+                     counter: List[int]) -> None:
     check = check_constraints(picture, constraints_set)
     if ind == len(picture) * len(picture[0]):
         if check == 1:
@@ -191,10 +191,11 @@ def _count_solutions(picture: Picture,
         _count_solutions(picture, ind + 1, constraints_set, counter)
         return
 
-    if check == 2 or check == 1:
-        for value in (0, 1):
-            picture[row][col] = value
-            _count_solutions(picture, ind + 1, constraints_set, counter)
+    for value in (0, 1):
+        if check == 0:
+            return
+        picture[row][col] = value
+        _count_solutions(picture, ind + 1, constraints_set, counter)
     picture[row][col] = -1
 
 
@@ -205,6 +206,7 @@ def how_many_solutions(constraints_set: Set[Constraint], n: int, m: int) -> int:
     counter = [0]
     _count_solutions(picture, 0, constraints_set, counter)
     return counter[0]
+
 
 
 """

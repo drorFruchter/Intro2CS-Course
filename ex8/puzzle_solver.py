@@ -40,11 +40,6 @@ def print_picture(picture: List[List[int]]) -> None:
         print()
 
 
-# constraints_set = {(0, 0, 0), (0, 3, 3), (1, 2, 5), (2, 0, 1)}
-# picture = add_constraints_set(3,5, constraints_set)
-# print_picture((picture))
-
-
 # ---------- Part 1 ----------
 
 
@@ -150,10 +145,8 @@ def _solve_puzzle_helper(picture: Picture,
                          sol: List[Picture]) -> Optional[Picture]:
     check = check_constraints(picture, constraints_set)
     if ind == len(picture) * len(picture[0]):
-        if check == 1:
-            solution = formal_solution(picture)
-            sol.append(solution)
-            print(solution)
+        if check == 1 and len(sol) == 0:
+            sol.append(formal_solution(picture))
         return picture
 
     row, col = ind // len(picture[0]), ind % len(picture[0])
@@ -164,6 +157,8 @@ def _solve_puzzle_helper(picture: Picture,
 
     if check == 2 or check == 1:
         for value in (0, 1):
+            if len(sol) == 1:
+                return
             picture[row][col] = value
             _solve_puzzle_helper(picture, ind + 1, constraints_set, sol)
     picture[row][col] = -1
@@ -174,16 +169,53 @@ def solve_puzzle(constraints_set: Set[Constraint], n: int, m: int) -> Optional[P
     append_constraints_set(picture, constraints_set)
     sol = []
     _solve_puzzle_helper(picture, 0, constraints_set, sol)
-    print(sol)
     if len(sol) > 0:
-        return sol
+        return sol[0]
     else:
         return None
 
 
+def _count_solutions(picture: Picture,
+                         ind: int,
+                         constraints_set: Set[Constraint],
+                         counter: List[int]) -> None:
+    check = check_constraints(picture, constraints_set)
+    if ind == len(picture) * len(picture[0]):
+        if check == 1:
+            counter[0] += 1
+        return
+
+    row, col = ind // len(picture[0]), ind % len(picture[0])
+
+    if picture[row][col] != -1:
+        _count_solutions(picture, ind + 1, constraints_set, counter)
+        return
+
+    if check == 2 or check == 1:
+        for value in (0, 1):
+            picture[row][col] = value
+            _count_solutions(picture, ind + 1, constraints_set, counter)
+    picture[row][col] = -1
+
+
+
 def how_many_solutions(constraints_set: Set[Constraint], n: int, m: int) -> int:
-    return len(solve_puzzle(constraints_set, n, m))
+    picture = create_default_picture(n, m)
+    append_constraints_set(picture, constraints_set)
+    counter = [0]
+    _count_solutions(picture, 0, constraints_set, counter)
+    return counter[0]
 
 
+"""
+    - switch all 1 to -1
+    - loop on the picture:
+        - if value is 0 or -2 -> continue
+        - else:
+            - go for min scan.
+            - set the value to the min score
+            - set -2 to every square around
+            
+"""
 def generate_puzzle(picture: Picture) -> Set[Constraint]:
     ...

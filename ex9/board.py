@@ -20,7 +20,6 @@ class Board:
         for row in range(len(self.board)):
             for col in range(len(self.board[row])):
                 board_str += " " + self.board[row][col] + " "
-                # print(" " + self.board[row][col] + " ", end='')
             board_str += "\n"
         return board_str
 
@@ -44,7 +43,6 @@ class Board:
         """
         #From the provided example car_config.json file, the return value could be
         #[('O','d',"some description"),('R','r',"some description"),('O','u',"some description")]
-
         pass
 
 

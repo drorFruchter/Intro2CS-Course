@@ -2,7 +2,26 @@ class Car:
     """
     Add class description here
     """
-    def __init__(self, name, length, location, orientation):
+
+    def _validate_constructor_input(self, name, length,
+                                    location, orientation):
+        row, col = location[0], location[1]
+        if (name not in ['Y', 'B', 'O', 'W', 'G', 'R']) \
+                or length > 4 \
+                or length < 2 \
+                or row < 0 \
+                or row > 6 \
+                or col < 0 \
+                or col > 6 \
+                or (orientation != 0 and orientation != 1) \
+                or (orientation == 0 and col+length > 6) \
+                or (orientation == 1 and row+length > 6):
+            return False
+        return True
+
+
+    def __init__(self, name: str, length: int,
+                 location: (int,int), orientation: int):
         """
         A constructor for a Car object
         :param name: A string representing the car's name
@@ -12,15 +31,32 @@ class Car:
         """
         # Note that this function is required in your Car implementation.
         # However, is not part of the API for general car types.
-        # implement your code and erase the "pass"
-        pass
+        if self._validate_constructor_input(name,
+                                            length,
+                                            location,
+                                            orientation):
+            self.name: str = name
+            self.length: int = length
+            self.location: (int, int) = location
+            self.orientation: int = orientation
+        else:
+            print("Input not valid")
+
+
 
     def car_coordinates(self):
         """
         :return: A list of coordinates the car is in
         """
-        # implement your code and erase the "pass"
-        pass
+        row, col = self.location[0], self.location[1]
+        co_lst = []
+        for i in range(self.length):
+            if self.orientation == 0:
+                co_lst.append((row+i, col))
+            else:
+                co_lst.append((row, col+i))
+        return co_lst
+
 
     def possible_moves(self):
         """

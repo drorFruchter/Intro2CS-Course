@@ -377,3 +377,4 @@ def generate_puzzle(picture: Picture) -> Set[Constraint]:
                 constraint.add((row, col, 0))
     return constraint
 
+

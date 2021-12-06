@@ -39,17 +39,17 @@ class Car:
         """
         :return: A dictionary of strings describing possible movements permitted by this car.
         """
-        #For this car type, keys are from 'udrl'
-        #The keys for vertical cars are 'u' and 'd'.
-        #The keys for horizontal cars are 'l' and 'r'.
-        #You may choose appropriate strings.
-        # implement your code and erase the "pass"
-        #The dictionary returned should look something like this:
-        #result = {'f': "cause the car to fly and reach the Moon",
-        #          'd': "cause the car to dig and reach the core of Earth",
-        #          'a': "another unknown action"}
-        #A car returning this dictionary supports the commands 'f','d','a'.
-        pass
+        if self.orientation == 0:
+            result = {'u': "cause the car to go UP",
+                      'd': "cause the car to go DOWN"}
+        elif self.orientation == 1:
+            result = {'r': "cause the car to go RIGHT",
+                      'l': "cause the car to go LEFT"}
+        else:
+            result = {}
+
+        return result
+
 
     def movement_requirements(self, movekey):
         """ 
@@ -59,7 +59,18 @@ class Car:
         #For example, a car in locations [(1,2),(2,2)] requires [(3,2)] to
         #be empty in order to move down (with a key 'd').
         # implement your code and erase the "pass"
-        pass
+        required_lst = []
+        if movekey == "u":
+            required_lst.append((self.location[0]-1, self.location[1]))
+        if movekey == "d":
+            required_lst.append((self.location[0]+1, self.location[1]))
+        if movekey == "r":
+            required_lst.append((self.location[0], self.location[1]+1))
+        if movekey == "l":
+            required_lst.append((self.location[0]-1, self.location[1]-1))
+
+        return required_lst
+
 
     def move(self, movekey):
         """ 
@@ -73,5 +84,4 @@ class Car:
         """
         :return: The name of this car.
         """
-        # implement your code and erase the "pass"
-        pass
+        return self.name

@@ -31,27 +31,36 @@ class Car:
         """
         # Note that this function is required in your Car implementation.
         # However, is not part of the API for general car types.
-        if self._validate_constructor_input(name,
-                                            length,
-                                            location,
-                                            orientation):
-            self.name: str = name
-            self.length: int = length
-            self.location: (int, int) = location
-            self.orientation: int = orientation
-        else:
-            print("Input not valid")
+        self.__name: str = name
+        self.__length: int = length
+        self.__location: (int, int) = location
+        self.__orientation: int = orientation
 
+
+    def get_name(self):
+        return self.__name
+
+
+    def get_length(self):
+        return self.__length
+
+
+    def get_location(self):
+        return self.__location
+
+
+    def get_orientation(self):
+        return self.__orientation
 
 
     def car_coordinates(self):
         """
         :return: A list of coordinates the car is in
         """
-        row, col = self.location[0], self.location[1]
+        row, col = self.__location[0], self.__location[1]
         co_lst = []
-        for i in range(self.length):
-            if self.orientation == 0:
+        for i in range(self.__length):
+            if self.__orientation == 0:
                 co_lst.append((row+i, col))
             else:
                 co_lst.append((row, col+i))

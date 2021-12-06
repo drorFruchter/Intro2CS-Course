@@ -69,6 +69,16 @@ class Game:
 
         return True
 
+
+    def _validate_player_input(self, play_st: str):
+        if len(play_st) != 3 \
+            or play_st[0] not in ['Y', 'B', 'O', 'W', 'G', 'R'] \
+            or play_st[1] != ',' \
+            or play_st[2] not in ['u', 'd', 'l', 'r']:
+            return False
+        return True
+
+
     def play(self):
         """
         The main driver of the Game. Manages the game until completion.
@@ -79,12 +89,15 @@ class Game:
         print(self.board.cell_content(self.board.target_location()))
         while play_st != '!' \
             and not self.board.cell_content(self.board.target_location()):
-            car_name, movekey = play_st.split(',')
-            if self._validate_car_move(car_name, movekey):
-                print(self.board.move_car(car_name, movekey)) # CAR NOT MOVING
-                print(self.board)
+            if self._validate_player_input(play_st):
+                car_name, movekey = play_st.split(',')
+                if self._validate_car_move(car_name, movekey):
+                    print(self.board.move_car(car_name, movekey))
+                    print(self.board)
+                else:
+                    print("invalid move")
             else:
-                print("invalid move")
+                print("invalid input")
             play_st = input("Please enter color and direction:")
 
 
@@ -124,6 +137,7 @@ def main() -> None:
     print(board)
     game = Game(board)
     game.play()
+    print(board)
 
 
 

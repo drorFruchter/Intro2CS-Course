@@ -1,5 +1,3 @@
-from helper import *
-from car import Car
 from copy import deepcopy
 
 
@@ -162,6 +160,7 @@ class Board:
                                              car.orientation]
                 self.board = board_copy
         else:
+            print("The car cannot be added to the board")
             added = False
         return added
 
@@ -176,6 +175,7 @@ class Board:
         """
         is_moved: bool = False
         if name not in self.cars:
+            print("Car not exist on the board")
             return False
 
         car = self.cars[name]
@@ -202,5 +202,6 @@ class Board:
                 self.board[row][col+length-1] = "_"
                 self.board[row][col-1] = name
                 car[1][1] -= 1
-
+        if not is_moved:
+            print("The car cannot go this way")
         return is_moved

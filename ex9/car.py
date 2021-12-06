@@ -15,10 +15,28 @@ class Car:
         """
         # Note that this function is required in your Car implementation.
         # However, is not part of the API for general car types.
+        # if self._validate_init_input(name, length, location, orientation):
         self.name: str = name
         self.length: int = length
         self.location: (int, int) = location
         self.orientation: int = orientation
+
+
+    # def _validate_init_input(self,
+    #                          name: str,
+    #                          length: int,
+    #                          location:(int,int),
+    #                          orientation: int) -> bool:
+    #     if len(name) == 0 \
+    #             or length <= 0\
+    #             or location[0] < 0 \
+    #             or location[1] < 0 \
+    #             or orientation not in [0, 1]:
+    #         print("Wrong car input")
+    #         return False
+    #     return True
+
+
 
 
     def car_coordinates(self):
@@ -77,8 +95,18 @@ class Car:
         :param movekey: A string representing the key of the required move.
         :return: True upon success, False otherwise
         """
-        # implement your code and erase the "pass"
-        pass
+        if movekey in self.possible_moves():
+            if movekey == "u":
+                self.location[0] -= 1
+            elif movekey == "d":
+                self.location[0] += 1
+            elif movekey == "r":
+                self.location[1] += 1
+            elif movekey == "l":
+                self.location[1] -= 1
+            return True
+        return False
+
 
     def get_name(self):
         """

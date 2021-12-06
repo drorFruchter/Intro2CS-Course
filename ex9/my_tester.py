@@ -1,11 +1,13 @@
 from board import Board
+from car import Car
 
 
-# board = Board()
-# print(board.target_location())
-
-cars = {"toyota": ["bla", ['y', 'n']]}
-car = cars["toyota"]
-col, row = car[1][0], car[1][1]
-car[1][0] = "N"
-print(cars)
+board = Board()
+car1 = Car("R", 2, (3,3), 1)
+car2 = Car("B", 3, (4,6), 0)
+board.add_car(car1)
+board.add_car(car2)
+print(board.possible_moves())
+print(board.move_car("ddd", "ddd"))
+print(board.cars)
+print(board)

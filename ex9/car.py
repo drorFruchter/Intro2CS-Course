@@ -3,22 +3,6 @@ class Car:
     Add class description here
     """
 
-    def _validate_constructor_input(self, name, length,
-                                    location, orientation):
-        row, col = location[0], location[1]
-        if (name not in ['Y', 'B', 'O', 'W', 'G', 'R']) \
-                or length > 4 \
-                or length < 2 \
-                or row < 0 \
-                or row > 6 \
-                or col < 0 \
-                or col > 6 \
-                or (orientation != 0 and orientation != 1) \
-                or (orientation == 0 and col+length > 6) \
-                or (orientation == 1 and row+length > 6):
-            return False
-        return True
-
 
     def __init__(self, name: str, length: int,
                  location: (int,int), orientation: int):
@@ -31,36 +15,20 @@ class Car:
         """
         # Note that this function is required in your Car implementation.
         # However, is not part of the API for general car types.
-        self.__name: str = name
-        self.__length: int = length
-        self.__location: (int, int) = location
-        self.__orientation: int = orientation
-
-
-    def get_name(self):
-        return self.__name
-
-
-    def get_length(self):
-        return self.__length
-
-
-    def get_location(self):
-        return self.__location
-
-
-    def get_orientation(self):
-        return self.__orientation
+        self.name: str = name
+        self.length: int = length
+        self.location: (int, int) = location
+        self.orientation: int = orientation
 
 
     def car_coordinates(self):
         """
         :return: A list of coordinates the car is in
         """
-        row, col = self.__location[0], self.__location[1]
+        row, col = self.location[0], self.location[1]
         co_lst = []
-        for i in range(self.__length):
-            if self.__orientation == 0:
+        for i in range(self.length):
+            if self.orientation == 0:
                 co_lst.append((row+i, col))
             else:
                 co_lst.append((row, col+i))

@@ -1,5 +1,6 @@
 from helper import *
 from car import Car
+from copy import deepcopy
 
 
 class Board:
@@ -26,6 +27,7 @@ class Board:
         return board_str
 
 
+    # Works
     def cell_list(self):
         """ This function returns the coordinates of cells in this board
         :return: list of coordinates
@@ -38,29 +40,33 @@ class Board:
         return cell_lst
 
 
+    # Works
     def _check_valid_move(self, car, move: str) -> bool:
         length, row, col, orientation = car[0], car[1][0], car[1][1], car[2]
         if orientation == 0:
             if move == 'r' or move == 'l':
                 return False
-            elif (row <= 0 and move =='u') or (row+length >= 6 and move=='d'):
+            elif (row <= 0 and move =='u') or (row+length > 6 and move=='d'):
                 return False
-            elif (self.board[row+length+1][col] != '_' and move == 'd') \
-                    or (self.board[row-1][col] != '_' and move == 'u'):
-                return False
+            if row+length+1 < len(self.board) and row-1 >= 0:
+                if (self.board[row+length+1][col] != '_' and move == 'd') \
+                        or (self.board[row-1][col] != '_' and move == 'u'):
+                    return False
 
         elif orientation == 1:
             if move == 'u' or move == 'd':
                 return False
-            elif (col <= 0 and move =='l') or (col+length >= 6 and move=='r'):
+            elif (col <= 0 and move =='l') or (col+length > 6 and move=='r'):
                 return False
-            elif (self.board[row][col+length+1] != '_' and move == 'r') \
-                    or (self.board[row][col-1] != '_' and move == 'l'):
-                return False
+            elif col+length+1 < len(self.board[row]) and col-1 >= 0:
+                if (self.board[row][col+length+1] != '_' and move == 'r') \
+                        or (self.board[row][col-1] != '_' and move == 'l'):
+                    return False
 
         return True
 
 
+    # Works
     def possible_moves(self):
         """ This function returns the legal moves of all cars in this board
         :return: list of tuples of the form (name,movekey,description) 
@@ -77,6 +83,7 @@ class Board:
         return moves_lst
 
 
+    # Works (Also not a clear function)
     def target_location(self):
         """
         This function returns the coordinates of the location which is to be filled for victory.
@@ -85,6 +92,7 @@ class Board:
         return (3,7)
 
 
+    # Works
     def cell_content(self, coordinate):
         """
         Checks if the given coordinates are empty.
@@ -92,11 +100,18 @@ class Board:
         :return: The name if the car in coordinate, None if empty
         """
         row, col = coordinate[0], coordinate[1]
+        if row > len(self.board)-1 \
+            or row < 0 \
+            or col > len(self.board[row])-1 \
+            or col < 0:
+            return None
+
         if self.board[row][col] != "_":
             return self.board[row][col]
         return None
 
 
+    # Works
     def _validate_car_input(self, name, length,
                                     location, orientation):
         row, col = location[0], location[1]
@@ -108,12 +123,13 @@ class Board:
                 or col < 0 \
                 or col > 6 \
                 or (orientation != 0 and orientation != 1) \
-                or (orientation == 0 and col+length > 6) \
-                or (orientation == 1 and row+length > 6):
+                or (orientation == 0 and row+length > 7) \
+                or (orientation == 1 and col+length > 7):
             return False
         return True
 
 
+    # Works
     def add_car(self, car):
         """
         Adds a car to the game.
@@ -121,33 +137,36 @@ class Board:
         :return: True upon success. False if failed
         """
         added: bool = True
-        if self._validate_car_input(car.get_name(), car.get_length(),
-                                    car.get_location(), car.get_orientation()):
-            row, col = car.get_location()[0], car.get_location()[1]
-            for i in range(car.get_length()[0]):
-
-                if car.get_orientation() == 0:
-                    if self.board[i + row][col] == '_':
-                        self.board[i + row][col] = car.get_name()
+        board_copy = deepcopy(self.board)
+        if self._validate_car_input(car.name, car.length,
+                                    car.location, car.orientation):
+            row, col = car.location[0], car.location[1]
+            for i in range(car.length):
+                if car.orientation == 0:
+                    if board_copy[i + row][col] == '_':
+                        board_copy[i + row][col] = car.name
                     else:
                         added = False
                         break
 
-                elif car.get_orientation() == 1:
-                    if self.board[row][i+col] == '_':
-                        self.board[row][i+col] = car.get_name()
+                elif car.orientation == 1:
+                    if board_copy[row][i+col] == '_':
+                        board_copy[row][i+col] = car.name
                     else:
                         added = False
                         break
 
             if added:
-                self.cars[car.get_name()] = [car.get_length(),
+                self.cars[car.name] = [car.length,
                                              [row,col],
-                                             car.get_orientation()]
+                                             car.orientation]
+                self.board = board_copy
+        else:
+            added = False
         return added
 
 
-
+    # Works
     def move_car(self, name, movekey):
         """
         moves car one step in given direction.
@@ -156,6 +175,9 @@ class Board:
         :return: True upon success, False otherwise
         """
         is_moved: bool = False
+        if name not in self.cars:
+            return False
+
         car = self.cars[name]
         if self._check_valid_move(car, movekey):
             is_moved = True
@@ -163,21 +185,21 @@ class Board:
                                             car[1][1], car[2]
             if movekey == 'd' and orientation == 0:
                 self.board[row][col] = "_"
-                self.board[row+length+1][col] = name
+                self.board[row+length][col] = name
                 car[1][0] += 1
 
             elif movekey == 'u' and orientation == 0:
-                self.board[row+length][col] = "_"
+                self.board[row+length-1][col] = "_"
                 self.board[row-1][col] = name
                 car[1][0] -= 1
 
             elif movekey == 'r' and orientation == 1:
                 self.board[row][col] = "_"
-                self.board[row][col+length+1] = name
+                self.board[row][col+length] = name
                 car[1][1] += 1
 
             elif movekey == 'l' and orientation == 1:
-                self.board[row][col+length] = "_"
+                self.board[row][col+length-1] = "_"
                 self.board[row][col-1] = name
                 car[1][1] -= 1
 

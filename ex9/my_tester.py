@@ -13,6 +13,10 @@ from car import Car
 # print(board.cars)
 # print(board)
 
-car1 = Car("kkkk", -1, (2,4), 1)
-car2 = Car("B", 3, (4,6), 0)
-print(car1.car_coordinates())
+# car1 = Car("kkkk", -1, (2,4), 1)
+# car2 = Car("B", 3, (4,6), 0)
+# print(car1.car_coordinates())
+
+dicti = {"test": "value"}
+for val in dicti:
+    print(val)

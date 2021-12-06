@@ -113,7 +113,8 @@ class Board:
     def _validate_car_input(self, name, length,
                                     location, orientation):
         row, col = location[0], location[1]
-        if (name not in ['Y', 'B', 'O', 'W', 'G', 'R']) \
+        # if (name not in ['Y', 'B', 'O', 'W', 'G', 'R']) \
+        if len(name) == 0 \
                 or length > 4 \
                 or length < 2 \
                 or row < 0 \

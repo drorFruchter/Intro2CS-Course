@@ -1,18 +1,20 @@
-from copy import deepcopy
 from car import Car
 from typing import List, Optional
 
+
 class Board:
     """
-    Add a class description here.
-    Write briefly about the purpose of the class
+    A class that presents a board ("like a parking lot")
+    every empty cell is "_", otherwise it contains the name of the car
     """
 
     def __init__(self):
+        """
+            A constructor for the Board class
+        """
         self.board = [['_' for _ in range(7)] for _ in range(7)]
         self.board[self.target_location()[0]].append("_")
         self.cars = {}
-
 
     def __str__(self):
         """
@@ -26,8 +28,6 @@ class Board:
             board_str += "\n"
         return board_str
 
-
-    # Works
     def cell_list(self):
         """
         This function returns the coordinates of cells in this board
@@ -39,10 +39,15 @@ class Board:
                 cell_lst.append((row, col))
         return cell_lst
 
-
-    # Works
     def _check_valid_move(self, car: Car, movekey: str) -> bool:
-        if len(car.car_coordinates()) <= 0 or movekey not in car.possible_moves():
+        """
+        This function checks if the movekry is valid for the car
+        :param car: a car object
+        :param movekey: a direction fr the car to move
+        :return: is it a valid move?
+        """
+        if len(car.car_coordinates()) <= 0 \
+                or movekey not in car.possible_moves():
             return False
 
         req_cells = car.movement_requirements(movekey)
@@ -53,16 +58,12 @@ class Board:
 
         return True
 
-
-    # Works
     def possible_moves(self):
         """
         This function returns the legal moves of all cars in this board
         :return: list of tuples of the form (name,movekey,description) 
                  representing legal moves
         """
-        #From the provided example car_config.json file, the return value could be
-        #[('O','d',"some description"),('R','r',"some description"),('O','u',"some description")]
         moves_lst = []
         possible_moves = {'d': "down", 'r': "right", 'u': "up", 'l': "left"}
         for name, car in self.cars.items():
@@ -71,17 +72,14 @@ class Board:
                     moves_lst.append((name, movekey, "Can go " + desc))
         return moves_lst
 
-
-    # Works
     def target_location(self):
         """
-        This function returns the coordinates of the location which is to be filled for victory.
+        This function returns the coordinates of the location
+        which is to be filled for victory.
         :return: (row,col) of goal location
         """
         return (3,7)
 
-
-    # Works
     def cell_content(self, coordinate: (int, int)) -> Optional[str]:
         """
         Checks if the given coordinates are empty.
@@ -99,9 +97,12 @@ class Board:
             return self.board[row][col]
         return None
 
-
-    # Works
     def _update_board(self) -> None:
+        """
+        This function is used usually after a new car was
+        added or changed its location.
+        The function updates the board by the new car locations
+        """
         new_board = [['_' for _ in range(7)] for _ in range(7)]
         new_board[self.target_location()[0]].append("_")
         for car_name, car_object in self.cars.items():
@@ -110,8 +111,6 @@ class Board:
                 new_board[cell[0]][cell[1]] = car_name
         self.board = new_board
 
-
-    # Works
     def add_car(self, car: Car):
         """
         Adds a car to the game.
@@ -122,9 +121,9 @@ class Board:
         car_coordinates: List[(int,int)] = car.car_coordinates()
         board_coordinates: List[(int,int)] = self.cell_list()
 
-        if len(car_coordinates) > len(self.board): # Car too big for board
+        if len(car_coordinates) > len(self.board):
             return False
-        for cell in car_coordinates: # Check if all cells available
+        for cell in car_coordinates:
             if self.cell_content(cell) or cell not in board_coordinates:
                 return False
 
@@ -132,8 +131,6 @@ class Board:
         self._update_board()
         return added
 
-
-    # Works
     def move_car(self, name, movekey):
         """
         moves car one step in given direction.

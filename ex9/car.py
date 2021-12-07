@@ -1,8 +1,7 @@
 class Car:
     """
-    Add class description here
+    A class that presents a car
     """
-
 
     def __init__(self, name: str, length: int,
                  location: (int,int), orientation: int):
@@ -13,14 +12,10 @@ class Car:
         :param location: A tuple representing the car's head (row, col) location
         :param orientation: One of either 0 (VERTICAL) or 1 (HORIZONTAL)
         """
-        # Note that this function is required in your Car implementation.
-        # However, is not part of the API for general car types.
-        # if self._validate_init_input(name, length, location, orientation):
         self.name: str = name
         self.length: int = length
         self.location: (int, int) = location
         self.orientation: int = orientation
-
 
     def car_coordinates(self):
         """
@@ -35,10 +30,10 @@ class Car:
                 co_lst.append((row, col+i))
         return co_lst
 
-
     def possible_moves(self):
         """
-        :return: A dictionary of strings describing possible movements permitted by this car.
+        :return: A dictionary of strings describing possible
+                 movements permitted by this car.
         """
         if self.orientation == 0:
             result = {'u': "cause the car to go UP",
@@ -51,15 +46,12 @@ class Car:
 
         return result
 
-
     def movement_requirements(self, movekey):
         """ 
         :param movekey: A string representing the key of the required move.
-        :return: A list of cell locations which must be empty in order for this move to be legal.
+        :return: A list of cell locations which must be empty
+                 in order for this move to be legal.
         """
-        #For example, a car in locations [(1,2),(2,2)] requires [(3,2)] to
-        #be empty in order to move down (with a key 'd').
-        # implement your code and erase the "pass"
         required_lst = []
         if movekey == "u":
             required_lst.append((self.location[0]-1, self.location[1]))
@@ -73,7 +65,6 @@ class Car:
             required_lst.append((self.location[0], self.location[1]-1))
 
         return required_lst
-
 
     def move(self, movekey):
         """ 
@@ -91,7 +82,6 @@ class Car:
                 self.location = (self.location[0], self.location[1] - 1)
             return True
         return False
-
 
     def get_name(self):
         """

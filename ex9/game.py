@@ -2,12 +2,13 @@ from board import Board
 from car import Car
 from helper import load_json
 from sys import argv
-from typing import List, Union
 
 
 class Game:
     """
-    Add class description here
+    A class used for the game of cars. it uses the classes "board" and "car".
+    The goal in the game is to get one of the car to the target point, by
+    moving one of them at a time
     """
 
     def __init__(self, board):
@@ -16,38 +17,23 @@ class Game:
         :param board: An object of type board
         """
         self.board = board
-        #You may assume board follows the API
-        # implement your code here (and then delete the next line - 'pass')
-
 
     def __single_turn(self):
-        """
-        Note - this function is here to guide you and it is *not mandatory*
-        to implement it.
-
-        The function runs one round of the game :
-            1. Get user's input of: what color car to move, and what
-                direction to move it.
-            2. Check if the input is valid.
-            3. Try moving car according to user's input.
-
-        Before and after every stage of a turn, you may print additional
-        information for the user, e.g., printing the board. In particular,
-        you may support additional features, (e.g., hints) as long as they
-        don't interfere with the API.
-        """
-        # implement your code here (and then delete the next line - 'pass')
         pass
 
-
-    def _validate_player_input(self, play_st: str):
+    def _validate_player_input(self, play_st: str) -> bool:
+        """
+        validates the user's input is in the correct form.
+        example: "O,r" - means car_name 'O' move 'r' right.
+        :param play_st: player's input
+        :return: bool, is it valid?
+        """
         if len(play_st) != 3 \
                 or play_st[0] not in ['Y', 'B', 'O', 'W', 'G', 'R'] \
                 or play_st[1] != ',' \
                 or play_st[2] not in ['u', 'd', 'l', 'r']:
             return False
         return True
-
 
     def play(self):
         """
@@ -71,6 +57,11 @@ class Game:
 
 
 def valid_car_to_game(car: Car) -> bool:
+    """
+    validates the car fits to the game rules
+    :param car: a Car object
+    :return: bool, is it a valid car?
+    """
     car_length = len(car.car_coordinates())
     if (car.get_name() not in ['Y', 'B', 'O', 'W', 'G', 'R']) \
             or car_length > 4 \
@@ -81,6 +72,10 @@ def valid_car_to_game(car: Car) -> bool:
 
 
 def main() -> None:
+    """
+    A main function to init load the config file,
+    create a board and add the cars to the board.
+    """
     cars_api = load_json(argv[1])
     board = Board()
     for car_name, car_details in cars_api.items():
@@ -94,10 +89,6 @@ def main() -> None:
     game = Game(board)
     game.play()
     print(board)
-
-
-
-
 
 
 if __name__== "__main__":

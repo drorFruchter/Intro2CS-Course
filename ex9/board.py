@@ -1,3 +1,12 @@
+#################################################################
+# FILE : board.py
+# WRITER : eyal , eyalmutzary , 206910432
+# EXERCISE : intro2cs ex9 2021
+# DESCRIPTION: Game class
+# STUDENTS I DISCUSSED THE EXERCISE WITH:
+# WEB PAGES I USED:
+# NOTES: ...
+#################################################################
 from car import Car
 from typing import List, Optional
 

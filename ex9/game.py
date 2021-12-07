@@ -40,39 +40,6 @@ class Game:
         pass
 
 
-    def _validate_car_move(self, car_name: str, move: str) -> bool:
-        car = self.board.cars[car_name]
-        board = self.board.board
-        length, row, col, orientation = car[0], car[1][0], car[1][1], car[2]
-        if car_name not in ['Y', 'B', 'O', 'W', 'G', 'R']:
-            return False
-
-        if orientation == 0:
-            if move == 'r' \
-                    or move == 'l' \
-                    or (row <= 0 and move =='u') \
-                    or (row+length > 6 and move=='d'):
-                return False
-            if (row+length+1 < len(board) and row-1 >= 0) \
-                    and ((board[row+length+1][col] != '_' and move == 'd')
-                         or (board[row-1][col] != '_' and move == 'u')):
-                return False
-
-
-        elif orientation == 1:
-            if move == 'u' \
-                    or move == 'd' \
-                    or (col <= 0 and move =='l') \
-                    or (col+length > 6 and move=='r'):
-                return False
-            if (col+length+1 < len(board[row]) and col-1 >= 0) \
-                    and ((board[row][col+length+1] != '_' and move == 'r')
-                         or (board[row][col-1] != '_' and move == 'l')):
-                return False
-
-        return True
-
-
     def _validate_player_input(self, play_st: str):
         if len(play_st) != 3 \
             or play_st[0] not in ['Y', 'B', 'O', 'W', 'G', 'R'] \
@@ -87,56 +54,44 @@ class Game:
         The main driver of the Game. Manages the game until completion.
         :return: None
         """
-        # play_st = input("Please enter color and direction:")
-        play_st = "O,u"
-        print(self.board.cell_content(self.board.target_location()))
+        play_st = input("Please enter color and direction:")
         while play_st != '!' \
-            and not self.board.cell_content(self.board.target_location()):
+                and not self.board.cell_content(self.board.target_location()):
             if self._validate_player_input(play_st):
                 car_name, movekey = play_st.split(',')
-                if self._validate_car_move(car_name, movekey):
-                    print(self.board.move_car(car_name, movekey))
+                if self.board.move_car(car_name, movekey):
                     print(self.board)
                 else:
                     print("invalid move")
             else:
                 print("invalid input")
-            play_st = input("Please enter color and direction:")
+            if not self.board.cell_content(self.board.target_location()):
+                play_st = input("Please enter color and direction:")
+        print("* GAME OVER *")
 
 
-def valid_car_to_game(board: Board,
-                      car_name: str,
-                      car_details) -> bool:
-    length, row, col, orientation = car_details[0], \
-                                    car_details[1][0], car_details[1][1], \
-                                    car_details[2]
-    board_size = len(board.board) # @@@@@@@@@ BAD @@@@@@@@@
-    """
-        - check if car_coordinated is in cell_list
-        - need to check every cell is empty??
-    """
-    if (car_name not in ['Y', 'B', 'O', 'W', 'G', 'R']) \
-            or len(car_name) == 0 \
-            or length > 4 \
-            or length < 2 \
-            or row < 0 \
-            or row > board_size-1\
-            or col < 0 \
-            or col > board_size-1\
-            or (orientation != 0 and orientation != 1) \
-            or (orientation == 0 and row+length > board_size) \
-            or (orientation == 1 and col+length > board_size):
+def valid_car_to_game(car: Car) -> bool:
+    car_length = len(car.car_coordinates())
+    if (car.get_name() not in ['Y', 'B', 'O', 'W', 'G', 'R']) \
+            or car_length > 4 \
+            or car_length < 2 \
+            or (car.orientation != 0 and car.orientation != 1):
         return False
     return True
 
 
 def main() -> None:
-    # cars_api = load_json(argv[1])
-    cars_api = load_json("car_config.json")
+    cars_api = load_json(argv[1])
+    # cars_api = load_json("car_config.json")
     board = Board()
     for car_name, car_details in cars_api.items():
-        if valid_car_to_game(board, car_name, car_details):
-            board.add_car(Car(car_name, *car_details))
+        new_car = Car(car_name,
+                      car_details[0],
+                      (car_details[1][0], car_details[1][1]),
+                      car_details[2])
+        if valid_car_to_game(new_car):
+            print("Car added")
+            board.add_car(new_car)
     print(board)
     game = Game(board)
     game.play()

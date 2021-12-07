@@ -22,23 +22,6 @@ class Car:
         self.orientation: int = orientation
 
 
-    # def _validate_init_input(self,
-    #                          name: str,
-    #                          length: int,
-    #                          location:(int,int),
-    #                          orientation: int) -> bool:
-    #     if len(name) == 0 \
-    #             or length <= 0\
-    #             or location[0] < 0 \
-    #             or location[1] < 0 \
-    #             or orientation not in [0, 1]:
-    #         print("Wrong car input")
-    #         return False
-    #     return True
-
-
-
-
     def car_coordinates(self):
         """
         :return: A list of coordinates the car is in
@@ -80,13 +63,13 @@ class Car:
         required_lst = []
         if movekey == "u":
             required_lst.append((self.location[0]-1, self.location[1]))
-        if movekey == "d":
+        elif movekey == "d":
             required_lst.append((self.location[0] + self.length,
                                  self.location[1]))
-        if movekey == "r":
+        elif movekey == "r":
             required_lst.append((self.location[0],
                                  self.location[1]+self.length))
-        if movekey == "l":
+        elif movekey == "l":
             required_lst.append((self.location[0], self.location[1]-1))
 
         return required_lst
@@ -99,13 +82,13 @@ class Car:
         """
         if movekey in self.possible_moves():
             if movekey == "u":
-                self.location[0] -= 1
+                self.location = (self.location[0] - 1, self.location[1])
             elif movekey == "d":
-                self.location[0] += 1
+                self.location = (self.location[0] + 1, self.location[1])
             elif movekey == "r":
-                self.location[1] += 1
+                self.location = (self.location[0], self.location[1] + 1)
             elif movekey == "l":
-                self.location[1] -= 1
+                self.location = (self.location[0], self.location[1] - 1)
             return True
         return False
 

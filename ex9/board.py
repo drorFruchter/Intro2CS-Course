@@ -1,5 +1,6 @@
 from copy import deepcopy
-
+from car import Car
+from typing import List, Optional
 
 class Board:
     """
@@ -9,6 +10,7 @@ class Board:
 
     def __init__(self):
         self.board = [['_' for _ in range(7)] for _ in range(7)]
+        self.board[self.target_location()[0]].append("_")
         self.cars = {}
 
 
@@ -35,7 +37,6 @@ class Board:
         for row in range(len(self.board)):
             for col in range(len(self.board[row])):
                 cell_lst.append((row, col))
-        cell_lst.append((3, 7))
         return cell_lst
 
 
@@ -83,7 +84,7 @@ class Board:
         return moves_lst
 
 
-    # Works (Also not a clear function)
+    # Works
     def target_location(self):
         """
         This function returns the coordinates of the location which is to be filled for victory.
@@ -93,7 +94,7 @@ class Board:
 
 
     # Works
-    def cell_content(self, coordinate):
+    def cell_content(self, coordinate: (int, int)) -> Optional[str]:
         """
         Checks if the given coordinates are empty.
         :param coordinate: tuple of (row,col) of the coordinate to check
@@ -111,59 +112,36 @@ class Board:
         return None
 
 
-    # Works - do I need it?
-    # def _validate_car_input(self, name, length,
-    #                                 location, orientation):
-    #     row, col = location[0], location[1]
-    #     # if (name not in ['Y', 'B', 'O', 'W', 'G', 'R']) \
-    #     if len(name) == 0 \
-    #             or length > 4 \
-    #             or length < 2 \
-    #             or row < 0 \
-    #             or row > 6 \
-    #             or col < 0 \
-    #             or col > 6 \
-    #             or (orientation != 0 and orientation != 1) \
-    #             or (orientation == 0 and row+length > 7) \
-    #             or (orientation == 1 and col+length > 7):
-    #         return False
-    #     return True
+    # Works
+    def _update_board(self) -> None:
+        new_board = [['_' for _ in range(7)] for _ in range(7)]
+        new_board[self.target_location()[0]].append("_")
+        for car_name, car_object in self.cars.items():
+            car_cells = car_object.car_coordinates()
+            for cell in car_cells:
+                new_board[cell[0]][cell[1]] = car_name
+        self.board = new_board
 
 
-    # Works - Does no validate car details
-    def add_car(self, car):
+    # Works
+    def add_car(self, car: Car):
         """
         Adds a car to the game.
         :param car: car object of car to add
         :return: True upon success. False if failed
         """
         added: bool = True
-        board_copy = deepcopy(self.board)
-        # if self._validate_car_input(car.name, car.length,
-        #                             car.location, car.orientation):
-        row, col = car.location[0], car.location[1]
-        for i in range(car.length):
-            if car.orientation == 0:
-                if board_copy[i + row][col] == '_':
-                    board_copy[i + row][col] = car.name
-                else:
-                    added = False
-                    break
+        car_coordinates: List[(int,int)] = car.car_coordinates()
+        board_coordinates: List[(int,int)] = self.cell_list()
 
-            elif car.orientation == 1:
-                if board_copy[row][i+col] == '_':
-                    board_copy[row][i+col] = car.name
-                else:
-                    added = False
-                    break
-        if added:
-            self.cars[car.name] = [car.length,
-                                             [row,col],
-                                         car.orientation]
-            self.board = board_copy
-        else:
-            print("The car cannot be added to the board")
-            added = False
+        if len(car_coordinates) > len(self.board): # Car too big for board
+            return False
+        for cell in car_coordinates: # Check if all cells available
+            if self.cell_content(cell) or cell not in board_coordinates:
+                return False
+
+        self.cars[car.get_name()] = car
+        self._update_board()
         return added
 
 
@@ -175,35 +153,18 @@ class Board:
         :param movekey: Key of move in car to activate
         :return: True upon success, False otherwise
         """
-        is_moved: bool = False
         if name not in self.cars:
-            print("Car not exist on the board")
+            return False
+        car = self.cars[name]
+        if len(car.car_coordinates()) <= 0 or movekey not in car.possible_moves():
             return False
 
-        car = self.cars[name]
-        if self._check_valid_move(car, movekey):
-            is_moved = True
-            length, row, col, orientation = car[0], car[1][0],\
-                                            car[1][1], car[2]
-            if movekey == 'd' and orientation == 0:
-                self.board[row][col] = "_"
-                self.board[row+length][col] = name
-                car[1][0] += 1
+        req_cells = car.movement_requirements(movekey)
+        board_coordinates = self.cell_list()
+        for cell in req_cells:
+            if self.cell_content(cell) or cell not in board_coordinates:
+                return False
 
-            elif movekey == 'u' and orientation == 0:
-                self.board[row+length-1][col] = "_"
-                self.board[row-1][col] = name
-                car[1][0] -= 1
-
-            elif movekey == 'r' and orientation == 1:
-                self.board[row][col] = "_"
-                self.board[row][col+length] = name
-                car[1][1] += 1
-
-            elif movekey == 'l' and orientation == 1:
-                self.board[row][col+length-1] = "_"
-                self.board[row][col-1] = name
-                car[1][1] -= 1
-        if not is_moved:
-            print("The car cannot go this way")
-        return is_moved
+        car.move(movekey)
+        self._update_board()
+        return True

@@ -41,27 +41,15 @@ class Board:
 
 
     # Works
-    def _check_valid_move(self, car, move: str) -> bool:
-        length, row, col, orientation = car[0], car[1][0], car[1][1], car[2]
-        if orientation == 0:
-            if move == 'r' or move == 'l':
-                return False
-            elif (row <= 0 and move =='u') or (row+length > 6 and move=='d'):
-                return False
-            if row+length+1 < len(self.board) and row-1 >= 0:
-                if (self.board[row+length+1][col] != '_' and move == 'd') \
-                        or (self.board[row-1][col] != '_' and move == 'u'):
-                    return False
+    def _check_valid_move(self, car: Car, movekey: str) -> bool:
+        if len(car.car_coordinates()) <= 0 or movekey not in car.possible_moves():
+            return False
 
-        elif orientation == 1:
-            if move == 'u' or move == 'd':
+        req_cells = car.movement_requirements(movekey)
+        board_coordinates = self.cell_list()
+        for cell in req_cells:
+            if self.cell_content(cell) or cell not in board_coordinates:
                 return False
-            elif (col <= 0 and move =='l') or (col+length > 6 and move=='r'):
-                return False
-            elif col+length+1 < len(self.board[row]) and col-1 >= 0:
-                if (self.board[row][col+length+1] != '_' and move == 'r') \
-                        or (self.board[row][col-1] != '_' and move == 'l'):
-                    return False
 
         return True
 
@@ -155,15 +143,10 @@ class Board:
         """
         if name not in self.cars:
             return False
-        car = self.cars[name]
-        if len(car.car_coordinates()) <= 0 or movekey not in car.possible_moves():
-            return False
 
-        req_cells = car.movement_requirements(movekey)
-        board_coordinates = self.cell_list()
-        for cell in req_cells:
-            if self.cell_content(cell) or cell not in board_coordinates:
-                return False
+        car = self.cars[name]
+        if not self._check_valid_move(car, movekey):
+            return False
 
         car.move(movekey)
         self._update_board()

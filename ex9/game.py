@@ -42,9 +42,9 @@ class Game:
 
     def _validate_player_input(self, play_st: str):
         if len(play_st) != 3 \
-            or play_st[0] not in ['Y', 'B', 'O', 'W', 'G', 'R'] \
-            or play_st[1] != ',' \
-            or play_st[2] not in ['u', 'd', 'l', 'r']:
+                or play_st[0] not in ['Y', 'B', 'O', 'W', 'G', 'R'] \
+                or play_st[1] != ',' \
+                or play_st[2] not in ['u', 'd', 'l', 'r']:
             return False
         return True
 
@@ -82,7 +82,6 @@ def valid_car_to_game(car: Car) -> bool:
 
 def main() -> None:
     cars_api = load_json(argv[1])
-    # cars_api = load_json("car_config.json")
     board = Board()
     for car_name, car_details in cars_api.items():
         new_car = Car(car_name,
@@ -90,7 +89,6 @@ def main() -> None:
                       (car_details[1][0], car_details[1][1]),
                       car_details[2])
         if valid_car_to_game(new_car):
-            print("Car added")
             board.add_car(new_car)
     print(board)
     game = Game(board)
@@ -103,7 +101,4 @@ def main() -> None:
 
 
 if __name__== "__main__":
-    #Your code here
-    #All access to files, non API constructors, and such must be in this
-    #section, or in functions called from this section.
     main()

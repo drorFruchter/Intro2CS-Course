@@ -14,6 +14,7 @@ print(car2.movement_requirements('d'))
 
 # print(board.cars)
 print(board)
+print(board.cell_list())
 
 # car1 = Car("kkkk", -1, (2,4), 1)
 # car2 = Car("B", 3, (4,6), 0)

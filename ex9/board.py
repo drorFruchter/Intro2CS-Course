@@ -27,7 +27,8 @@ class Board:
 
     # Works
     def cell_list(self):
-        """ This function returns the coordinates of cells in this board
+        """
+        This function returns the coordinates of cells in this board
         :return: list of coordinates
         """
         cell_lst = []
@@ -66,7 +67,8 @@ class Board:
 
     # Works
     def possible_moves(self):
-        """ This function returns the legal moves of all cars in this board
+        """
+        This function returns the legal moves of all cars in this board
         :return: list of tuples of the form (name,movekey,description) 
                  representing legal moves
         """
@@ -109,26 +111,26 @@ class Board:
         return None
 
 
-    # Works
-    def _validate_car_input(self, name, length,
-                                    location, orientation):
-        row, col = location[0], location[1]
-        # if (name not in ['Y', 'B', 'O', 'W', 'G', 'R']) \
-        if len(name) == 0 \
-                or length > 4 \
-                or length < 2 \
-                or row < 0 \
-                or row > 6 \
-                or col < 0 \
-                or col > 6 \
-                or (orientation != 0 and orientation != 1) \
-                or (orientation == 0 and row+length > 7) \
-                or (orientation == 1 and col+length > 7):
-            return False
-        return True
+    # Works - do I need it?
+    # def _validate_car_input(self, name, length,
+    #                                 location, orientation):
+    #     row, col = location[0], location[1]
+    #     # if (name not in ['Y', 'B', 'O', 'W', 'G', 'R']) \
+    #     if len(name) == 0 \
+    #             or length > 4 \
+    #             or length < 2 \
+    #             or row < 0 \
+    #             or row > 6 \
+    #             or col < 0 \
+    #             or col > 6 \
+    #             or (orientation != 0 and orientation != 1) \
+    #             or (orientation == 0 and row+length > 7) \
+    #             or (orientation == 1 and col+length > 7):
+    #         return False
+    #     return True
 
 
-    # Works
+    # Works - Does no validate car details
     def add_car(self, car):
         """
         Adds a car to the game.
@@ -137,29 +139,28 @@ class Board:
         """
         added: bool = True
         board_copy = deepcopy(self.board)
-        if self._validate_car_input(car.name, car.length,
-                                    car.location, car.orientation):
-            row, col = car.location[0], car.location[1]
-            for i in range(car.length):
-                if car.orientation == 0:
-                    if board_copy[i + row][col] == '_':
-                        board_copy[i + row][col] = car.name
-                    else:
-                        added = False
-                        break
+        # if self._validate_car_input(car.name, car.length,
+        #                             car.location, car.orientation):
+        row, col = car.location[0], car.location[1]
+        for i in range(car.length):
+            if car.orientation == 0:
+                if board_copy[i + row][col] == '_':
+                    board_copy[i + row][col] = car.name
+                else:
+                    added = False
+                    break
 
-                elif car.orientation == 1:
-                    if board_copy[row][i+col] == '_':
-                        board_copy[row][i+col] = car.name
-                    else:
-                        added = False
-                        break
-
-            if added:
-                self.cars[car.name] = [car.length,
+            elif car.orientation == 1:
+                if board_copy[row][i+col] == '_':
+                    board_copy[row][i+col] = car.name
+                else:
+                    added = False
+                    break
+        if added:
+            self.cars[car.name] = [car.length,
                                              [row,col],
-                                             car.orientation]
-                self.board = board_copy
+                                         car.orientation]
+            self.board = board_copy
         else:
             print("The car cannot be added to the board")
             added = False

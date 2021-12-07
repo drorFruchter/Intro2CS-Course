@@ -110,7 +110,11 @@ def valid_car_to_game(board: Board,
     length, row, col, orientation = car_details[0], \
                                     car_details[1][0], car_details[1][1], \
                                     car_details[2]
-    board_size = len(board.board)
+    board_size = len(board.board) # @@@@@@@@@ BAD @@@@@@@@@
+    """
+        - check if car_coordinated is in cell_list
+        - need to check every cell is empty??
+    """
     if (car_name not in ['Y', 'B', 'O', 'W', 'G', 'R']) \
             or len(car_name) == 0 \
             or length > 4 \

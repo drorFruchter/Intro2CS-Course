@@ -81,11 +81,13 @@ class Car:
         if movekey == "u":
             required_lst.append((self.location[0]-1, self.location[1]))
         if movekey == "d":
-            required_lst.append((self.location[0]+1, self.location[1]))
+            required_lst.append((self.location[0] + self.length,
+                                 self.location[1]))
         if movekey == "r":
-            required_lst.append((self.location[0], self.location[1]+1))
+            required_lst.append((self.location[0],
+                                 self.location[1]+self.length))
         if movekey == "l":
-            required_lst.append((self.location[0]-1, self.location[1]-1))
+            required_lst.append((self.location[0], self.location[1]-1))
 
         return required_lst
 

@@ -23,15 +23,15 @@ class Game:
     def __single_turn(self):
         """
         Note - this function is here to guide you and it is *not mandatory*
-        to implement it. 
+        to implement it.
 
         The function runs one round of the game :
-            1. Get user's input of: what color car to move, and what 
+            1. Get user's input of: what color car to move, and what
                 direction to move it.
             2. Check if the input is valid.
             3. Try moving car according to user's input.
 
-        Before and after every stage of a turn, you may print additional 
+        Before and after every stage of a turn, you may print additional
         information for the user, e.g., printing the board. In particular,
         you may support additional features, (e.g., hints) as long as they
         don't interfere with the API.
@@ -48,24 +48,27 @@ class Game:
             return False
 
         if orientation == 0:
-            if move == 'r' or move == 'l':
+            if move == 'r' \
+                    or move == 'l' \
+                    or (row <= 0 and move =='u') \
+                    or (row+length > 6 and move=='d'):
                 return False
-            elif (row <= 0 and move =='u') or (row+length > 6 and move=='d'):
+            if (row+length+1 < len(board) and row-1 >= 0) \
+                    and ((board[row+length+1][col] != '_' and move == 'd')
+                         or (board[row-1][col] != '_' and move == 'u')):
                 return False
-            if row+length+1 < len(board) and row-1 >= 0:
-                if (board[row+length+1][col] != '_' and move == 'd') \
-                        or (board[row-1][col] != '_' and move == 'u'):
-                    return False
+
 
         elif orientation == 1:
-            if move == 'u' or move == 'd':
+            if move == 'u' \
+                    or move == 'd' \
+                    or (col <= 0 and move =='l') \
+                    or (col+length > 6 and move=='r'):
                 return False
-            elif (col <= 0 and move =='l') or (col+length > 6 and move=='r'):
+            if (col+length+1 < len(board[row]) and col-1 >= 0) \
+                    and ((board[row][col+length+1] != '_' and move == 'r')
+                         or (board[row][col-1] != '_' and move == 'l')):
                 return False
-            elif col+length+1 < len(board[row]) and col-1 >= 0:
-                if (board[row][col+length+1] != '_' and move == 'r') \
-                        or (board[row][col-1] != '_' and move == 'l'):
-                    return False
 
         return True
 
@@ -99,10 +102,6 @@ class Game:
             else:
                 print("invalid input")
             play_st = input("Please enter color and direction:")
-
-
-
-
 
 
 def valid_car_to_game(board: Board,

@@ -9,7 +9,7 @@ board.add_car(car1)
 board.add_car(car2)
 # print(car1.get_name())
 print(board.possible_moves())
-print(board.move_car("R", "l"))
+print(car2.movement_requirements('d'))
 
 
 # print(board.cars)

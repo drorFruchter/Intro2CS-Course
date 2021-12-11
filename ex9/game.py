@@ -26,7 +26,7 @@ class Game:
         Initialize a new Game object.
         :param board: An object of type board
         """
-        self.board = board
+        self.__board = board
 
     def __single_turn(self):
         pass
@@ -50,23 +50,23 @@ class Game:
         The main driver of the Game. Manages the game until completion.
         :return: None
         """
-        original_board = deepcopy(self.board)
-        print(self.board)
+        original_board = deepcopy(self.__board)
+        print(self.__board)
         play_st = input("Please enter color and direction:")
         while play_st != '!' \
-                and not self.board.cell_content(self.board.target_location()):
+                and not self.__board.cell_content(self.__board.target_location()):
             if self._validate_player_input(play_st):
                 car_name, movekey = play_st.split(',')
-                if self.board.move_car(car_name, movekey):
-                    print(self.board)
+                if self.__board.move_car(car_name, movekey):
+                    print(self.__board)
                 else:
                     print("invalid move")
             else:
                 print("invalid input")
-            if not self.board.cell_content(self.board.target_location()):
+            if not self.__board.cell_content(self.__board.target_location()):
                 play_st = input("Please enter color and direction:")
         print("* GAME OVER *")
-        self.board = original_board
+        self.__board = original_board
 
 
 def valid_car_to_game(car: Car, orientation) -> bool:

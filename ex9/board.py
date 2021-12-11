@@ -21,9 +21,9 @@ class Board:
         """
             A constructor for the Board class
         """
-        self.board = [['_' for _ in range(7)] for _ in range(7)]
-        self.board[self.target_location()[0]].append("_")
-        self.cars = {}
+        self.__board = [['_' for _ in range(7)] for _ in range(7)]
+        self.__board[self.target_location()[0]].append("_")
+        self.__cars = {}
 
     def __str__(self):
         """
@@ -31,9 +31,9 @@ class Board:
         :return: A string of the current status of the board
         """
         board_str = ""
-        for row in range(len(self.board)):
-            for col in range(len(self.board[row])):
-                board_str += " " + self.board[row][col] + " "
+        for row in range(len(self.__board)):
+            for col in range(len(self.__board[row])):
+                board_str += " " + self.__board[row][col] + " "
             board_str += "\n"
         return board_str
 
@@ -43,8 +43,8 @@ class Board:
         :return: list of coordinates
         """
         cell_lst = []
-        for row in range(len(self.board)):
-            for col in range(len(self.board[row])):
+        for row in range(len(self.__board)):
+            for col in range(len(self.__board[row])):
                 cell_lst.append((row, col))
         return cell_lst
 
@@ -75,7 +75,7 @@ class Board:
         """
         moves_lst = []
         possible_moves = {'d': "down", 'r': "right", 'u': "up", 'l': "left"}
-        for name, car in self.cars.items():
+        for name, car in self.__cars.items():
             for movekey, desc in possible_moves.items():
                 if self._check_valid_move(car, movekey):
                     moves_lst.append((name, movekey, "Can go " + desc))
@@ -96,14 +96,14 @@ class Board:
         :return: The name if the car in coordinate, None if empty
         """
         row, col = coordinate[0], coordinate[1]
-        if row > len(self.board)-1 \
+        if row > len(self.__board)-1 \
             or row < 0 \
-            or col > len(self.board[row])-1 \
+            or col > len(self.__board[row])-1 \
             or col < 0:
             return None
 
-        if self.board[row][col] != "_":
-            return self.board[row][col]
+        if self.__board[row][col] != "_":
+            return self.__board[row][col]
         return None
 
     def _update_board(self) -> None:
@@ -114,11 +114,11 @@ class Board:
         """
         new_board = [['_' for _ in range(7)] for _ in range(7)]
         new_board[self.target_location()[0]].append("_")
-        for car_name, car_object in self.cars.items():
+        for car_name, car_object in self.__cars.items():
             car_cells = car_object.car_coordinates()
             for cell in car_cells:
                 new_board[cell[0]][cell[1]] = car_name
-        self.board = new_board
+        self.__board = new_board
 
     def add_car(self, car: Car):
         """
@@ -129,15 +129,15 @@ class Board:
         added: bool = True
         car_coordinates: List[(int,int)] = car.car_coordinates()
         board_coordinates: List[(int,int)] = self.cell_list()
-        if car.get_name() in self.cars:
+        if car.get_name() in self.__cars:
             return False
-        if len(car_coordinates) > len(self.board):
+        if len(car_coordinates) > len(self.__board):
             return False
         for cell in car_coordinates:
             if self.cell_content(cell) or cell not in board_coordinates:
                 return False
 
-        self.cars[car.get_name()] = car
+        self.__cars[car.get_name()] = car
         self._update_board()
         return added
 
@@ -148,10 +148,10 @@ class Board:
         :param movekey: Key of move in car to activate
         :return: True upon success, False otherwise
         """
-        if name not in self.cars:
+        if name not in self.__cars:
             return False
 
-        car = self.cars[name]
+        car = self.__cars[name]
         if not self._check_valid_move(car, movekey):
             return False
 

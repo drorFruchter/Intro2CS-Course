@@ -21,19 +21,19 @@ class Car:
         :param location: A tuple representing the car's head (row, col) location
         :param orientation: One of either 0 (VERTICAL) or 1 (HORIZONTAL)
         """
-        self.name: str = name
-        self.length: int = length
-        self.location: (int, int) = location
-        self.orientation: int = orientation
+        self.__name: str = name
+        self.__length: int = length
+        self.__location: (int, int) = location
+        self.__orientation: int = orientation
 
     def car_coordinates(self):
         """
         :return: A list of coordinates the car is in
         """
-        row, col = self.location[0], self.location[1]
+        row, col = self.__location[0], self.__location[1]
         co_lst = []
-        for i in range(self.length):
-            if self.orientation == 0:
+        for i in range(self.__length):
+            if self.__orientation == 0:
                 co_lst.append((row+i, col))
             else:
                 co_lst.append((row, col+i))
@@ -44,10 +44,10 @@ class Car:
         :return: A dictionary of strings describing possible
                  movements permitted by this car.
         """
-        if self.orientation == 0:
+        if self.__orientation == 0:
             result = {'u': "cause the car to go UP",
                       'd': "cause the car to go DOWN"}
-        elif self.orientation == 1:
+        elif self.__orientation == 1:
             result = {'r': "cause the car to go RIGHT",
                       'l': "cause the car to go LEFT"}
         else:
@@ -63,15 +63,15 @@ class Car:
         """
         required_lst = []
         if movekey == "u":
-            required_lst.append((self.location[0]-1, self.location[1]))
+            required_lst.append((self.__location[0] - 1, self.__location[1]))
         elif movekey == "d":
-            required_lst.append((self.location[0] + self.length,
-                                 self.location[1]))
+            required_lst.append((self.__location[0] + self.__length,
+                                 self.__location[1]))
         elif movekey == "r":
-            required_lst.append((self.location[0],
-                                 self.location[1]+self.length))
+            required_lst.append((self.__location[0],
+                                 self.__location[1] + self.__length))
         elif movekey == "l":
-            required_lst.append((self.location[0], self.location[1]-1))
+            required_lst.append((self.__location[0], self.__location[1] - 1))
 
         return required_lst
 
@@ -82,13 +82,13 @@ class Car:
         """
         if movekey in self.possible_moves():
             if movekey == "u":
-                self.location = (self.location[0] - 1, self.location[1])
+                self.__location = (self.__location[0] - 1, self.__location[1])
             elif movekey == "d":
-                self.location = (self.location[0] + 1, self.location[1])
+                self.__location = (self.__location[0] + 1, self.__location[1])
             elif movekey == "r":
-                self.location = (self.location[0], self.location[1] + 1)
+                self.__location = (self.__location[0], self.__location[1] + 1)
             elif movekey == "l":
-                self.location = (self.location[0], self.location[1] - 1)
+                self.__location = (self.__location[0], self.__location[1] - 1)
             return True
         return False
 
@@ -96,4 +96,4 @@ class Car:
         """
         :return: The name of this car.
         """
-        return self.name
+        return self.__name

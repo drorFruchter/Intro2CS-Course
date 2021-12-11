@@ -2,7 +2,7 @@
 # FILE : car.py
 # WRITER : eyal , eyalmutzary , 206910432
 # EXERCISE : intro2cs ex9 2021
-# DESCRIPTION: Game class
+# DESCRIPTION: Car class
 # STUDENTS I DISCUSSED THE EXERCISE WITH:
 # WEB PAGES I USED:
 # NOTES: ...

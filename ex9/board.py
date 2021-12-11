@@ -2,7 +2,7 @@
 # FILE : board.py
 # WRITER : eyal , eyalmutzary , 206910432
 # EXERCISE : intro2cs ex9 2021
-# DESCRIPTION: Game class
+# DESCRIPTION: Board class
 # STUDENTS I DISCUSSED THE EXERCISE WITH:
 # WEB PAGES I USED:
 # NOTES: ...
@@ -129,7 +129,8 @@ class Board:
         added: bool = True
         car_coordinates: List[(int,int)] = car.car_coordinates()
         board_coordinates: List[(int,int)] = self.cell_list()
-
+        if car.get_name() in self.cars:
+            return False
         if len(car_coordinates) > len(self.board):
             return False
         for cell in car_coordinates:

@@ -11,6 +11,7 @@ from board import Board
 from car import Car
 from helper import load_json
 from sys import argv
+from copy import deepcopy
 
 
 class Game:
@@ -49,6 +50,8 @@ class Game:
         The main driver of the Game. Manages the game until completion.
         :return: None
         """
+        original_board = deepcopy(self.board)
+        print(self.board)
         play_st = input("Please enter color and direction:")
         while play_st != '!' \
                 and not self.board.cell_content(self.board.target_location()):
@@ -63,9 +66,10 @@ class Game:
             if not self.board.cell_content(self.board.target_location()):
                 play_st = input("Please enter color and direction:")
         print("* GAME OVER *")
+        self.board = original_board
 
 
-def valid_car_to_game(car: Car) -> bool:
+def valid_car_to_game(car: Car, orientation) -> bool:
     """
     validates the car fits to the game rules
     :param car: a Car object
@@ -75,7 +79,7 @@ def valid_car_to_game(car: Car) -> bool:
     if (car.get_name() not in ['Y', 'B', 'O', 'W', 'G', 'R']) \
             or car_length > 4 \
             or car_length < 2 \
-            or (car.orientation != 0 and car.orientation != 1):
+            or (orientation != 0 and orientation != 1):
         return False
     return True
 
@@ -92,12 +96,11 @@ def main() -> None:
                       car_details[0],
                       (car_details[1][0], car_details[1][1]),
                       car_details[2])
-        if valid_car_to_game(new_car):
+        if valid_car_to_game(new_car, car_details[2]):
             board.add_car(new_car)
     print(board)
     game = Game(board)
     game.play()
-    print(board)
 
 
 if __name__== "__main__":

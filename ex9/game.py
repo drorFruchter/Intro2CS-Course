@@ -51,6 +51,9 @@ class Game:
         :return: None
         """
         original_board = deepcopy(self.__board)
+        if len(self.__board.possible_moves()) == 0:
+            print("No moves available")
+            return
         print(self.__board)
         play_st = input("Please enter color and direction:")
         while play_st != '!' \

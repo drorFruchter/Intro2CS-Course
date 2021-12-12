@@ -57,7 +57,8 @@ class Game:
         print(self.__board)
         play_st = input("Please enter color and direction:")
         while play_st != '!' \
-                and not self.__board.cell_content(self.__board.target_location()):
+                and not self.__board.cell_content\
+                    (self.__board.target_location()):
             if self._validate_player_input(play_st):
                 car_name, movekey = play_st.split(',')
                 if self.__board.move_car(car_name, movekey):

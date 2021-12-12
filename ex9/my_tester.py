@@ -2,14 +2,14 @@ from board import Board
 from car import Car
 
 #
-board = Board()
-car1 = Car("R", 5, (3,1), 1)
-car2 = Car("B", 3, (4,6), 0)
-board.add_car(car1)
-board.add_car(car2)
-board.move_car("B", 'u')
-board.move_car("B", 'u')
-board.move_car("R", 'r')
+# board = Board()
+# car1 = Car("R", 5, (3,1), 1)
+# car2 = Car("B", 3, (4,6), 0)
+# board.add_car(car1)
+# board.add_car(car2)
+# board.move_car("B", 'u')
+# board.move_car("B", 'u')
+# board.move_car("R", 'r')
 
 
 
@@ -20,16 +20,11 @@ board.move_car("R", 'r')
 #
 #
 # # print(board.cars)
-print(board)
+# print(board)
 # print(board.cell_list())
 
 # car1 = Car("kkkk", -1, (2,4), 1)
 # car2 = Car("B", 3, (4,6), 0)
 # print(car1.car_coordinates())
 
-
-"""
-    Questions:
-        - filename will have .json?
-        
-"""
+print(Car('White', 3, (4,5), 0))

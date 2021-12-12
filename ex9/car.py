@@ -18,7 +18,7 @@ class Car:
         A constructor for a Car object
         :param name: A string representing the car's name
         :param length: A positive int representing the car's length.
-        :param location: A tuple representing the car's head (row, col) location
+        :param location: A tuple representing the car's head (row, col) locat
         :param orientation: One of either 0 (VERTICAL) or 1 (HORIZONTAL)
         """
         self.__name: str = name

@@ -12,6 +12,7 @@ class Explosion:
                 if abs(x - row) + abs(y - col) == time_from_explosion:
                     self.__exploded_cells.append((row, col))
         return self.__exploded_cells
+#     this is a temp comment
 
 
 

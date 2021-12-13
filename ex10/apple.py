@@ -1,4 +1,5 @@
 class Apple:
+    color: str = "green"
 
     def __init__(self, location: (int, int), score: int) -> None:
         self.__location: (int, int) = location

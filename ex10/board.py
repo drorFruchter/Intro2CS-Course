@@ -6,7 +6,7 @@ from typing import List, Dict, Any
 
 class Board:
 
-    def __init__(self, width: int, height: int, snake: Snake):
+    def __init__(self, width: int, height: int):
         # self.board = {"Size": {"width": width, "height": height},
         #               "Colors": {"green": [],
         #                          "red": [],
@@ -17,14 +17,10 @@ class Board:
         #                           "snake": snake}}
 
         self.board = [[None for _ in range(width)] for _ in range(height)]
-        for i in range(height):
-            self.board.append([])
-            for _ in range(width):
-                self.board[i].append(None)
         self.objects = {"apples": [],
                         "bomb": None,
                         "explosion": None,
-                        "snake": snake}
+                        "snake": None}
 
     def cell_list(self):
         cells: List = []
@@ -62,19 +58,23 @@ class Board:
     def add_apple(self, apple: Apple) -> bool:
         if len(self.objects["apples"]) >= 3:
             return False
-        # x, y, score = get_random_apple_data()
-        # apple = Apple((x, y), score)
         if not self.cell_content(apple.get_location()):
             return False
         else:
             self.objects["apple"].append(apple)
 
-    def add_bomb(self, bomb: Bomb):
+    def add_bomb(self, bomb: Bomb) -> bool:
         if not self.objects["bombs"] or not self.objects["explosion"]:
             return False
-        # x, y, radius, time = get_random_bomb_data()
-        # bomb = Bomb((x,y), radius, time)
         if not self.cell_content(bomb.get_location()):
             return False
         else:
             self.objects["bomb"] = bomb
+            return True
+
+    def add_snake(self, snake: Snake) -> bool:
+        if not self.objects["snake"]:
+            return False
+        else:
+            self.objects["snake"] = snake
+            return True

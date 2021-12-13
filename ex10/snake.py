@@ -1,6 +1,8 @@
 from queue import Queue
 
+
 class Snake:
+    color: str = "black"
 
     def __init__(self):
         self.body = Queue()
@@ -47,6 +49,4 @@ class Snake:
         self.body.dequeue()
 
     def check_collision(self):
-        if len(set(self.snake_coordinates())) == self.body.get_size():
-            return False
-        return True
+        return len(set(self.snake_coordinates())) != self.body.get_size()

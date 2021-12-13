@@ -8,4 +8,3 @@ class Bomb:
 
     def get_location(self):
         return self.__location
-
